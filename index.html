@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora GA Entregas Express</title>
+    <meta name="description" content="Calculadora de preços para entregas de moto - GA Entregas Express. Calcule o valor da sua entrega de forma rápida.">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b0c10">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GA Entregas">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #08090d;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background ambient glows */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -150px;
+            right: -80px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Main card */
+        .card {
+            max-width: 480px;
+            width: 100%;
+            background: linear-gradient(160deg, rgba(18, 19, 26, 0.97), rgba(12, 13, 18, 0.99));
+            padding: 28px 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.12);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(212, 175, 55, 0.03),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .logo {
+            display: block;
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 12px auto;
+            object-fit: contain;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
+        }
+
+        h1 {
+            font-size: 1.4em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37, #f5d76e, #d4af37);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.5px;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 200% center; }
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.78em;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* Form groups */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label.field-label {
+            font-weight: 600;
+            font-size: 0.78em;
+            display: block;
+            margin-bottom: 6px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 0.92em;
+            transition: all 0.25s ease;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: rgba(212, 175, 55, 0.5);
+            background: rgba(212, 175, 55, 0.04);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08);
+        }
+
+        input::placeholder {
+            color: #444;
+        }
+
+        select option {
+            background: #1a1c23;
+            color: #fff;
+        }
+
+        .hint {
+            font-size: 0.72em;
+            color: #555;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hint a {
+            color: #d4af37;
+            text-decoration: none;
+        }
+
+        .hint a:hover {
+            text-decoration: underline;
+        }
+
+        /* Checkbox cards */
+        .section-label {
+            font-weight: 600;
+            font-size: 0.78em;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .option-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 14px 12px;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .option-card:hover {
+            border-color: rgba(212, 175, 55, 0.2);
+            background: rgba(212, 175, 55, 0.02);
+        }
+
+        .option-card.checked {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.06);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.05);
+        }
+
+        .option-card input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            margin: 1px 0 0 0;
+            border: 2px solid rgba(212, 175, 55, 0.25);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .option-card input[type="checkbox"]:checked {
+            border-color: #d4af37;
+            background: #d4af37;
+        }
+
+        .option-card input[type="checkbox"]:checked::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .option-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .option-title {
+            font-weight: 600;
+            font-size: 0.85em;
+            color: #ddd;
+        }
+
+        .option-desc {
+            font-size: 0.7em;
+            color: #666;
+        }
+
+        /* Two column layout */
+        .row-two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Button */
+        .btn-calcular {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #d4af37, #c5a028);
+            border: none;
+            font-size: 0.92em;
+            font-weight: 700;
+            color: #0a0a0a;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-calcular::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-calcular:hover {
+            background: linear-gradient(135deg, #e0be4a, #d4af37);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(212, 175, 55, 0.25);
+        }
+
+        .btn-calcular:hover::before {
+            left: 100%;
+        }
+
+        .btn-calcular:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);
+        }
+
+        /* Warning */
+        .warning {
+            margin-top: 16px;
+            padding: 12px 14px;
+            background: rgba(170, 50, 50, 0.08);
+            border: 1px solid rgba(170, 50, 50, 0.25);
+            border-radius: 10px;
+            font-size: 0.82em;
+            color: #ff9090;
+            display: none;
+            animation: fadeSlideIn 0.3s ease;
+            line-height: 1.5;
+        }
+
+        .warning::before {
+            content: '⚠️ ';
+        }
+
+        /* Result panel */
+        .result {
+            margin-top: 20px;
+            padding: 22px 18px;
+            background: linear-gradient(150deg, rgba(212, 175, 55, 0.07), rgba(212, 175, 55, 0.02));
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 14px;
+            text-align: center;
+            animation: fadeSlideIn 0.4s ease-out;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-distance {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8em;
+            color: #888;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .result-label {
+            font-size: 0.82em;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .result-total {
+            font-size: 2.4em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37, #f5d76e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 6px 0 0 0;
+            line-height: 1.2;
+        }
+
+        /* Breakdown */
+        .breakdown {
+            text-align: left;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .breakdown-title {
+            font-size: 0.7em;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 0.82em;
+        }
+
+        .breakdown-row .lbl {
+            color: #888;
+            font-weight: 400;
+        }
+
+        .breakdown-row .val {
+            color: #bbb;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .breakdown-row.total-row {
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+            margin-top: 8px;
+            padding-top: 10px;
+        }
+
+        .breakdown-row.total-row .lbl {
+            color: #d4af37;
+            font-weight: 700;
+        }
+
+        .breakdown-row.total-row .val {
+            color: #d4af37;
+            font-weight: 800;
+            font-size: 1.05em;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.68em;
+            color: #3a3a3a;
+        }
+
+        /* Install banner */
+        .install-banner {
+            margin-top: 16px;
+            padding: 12px;
+            background: rgba(212, 175, 55, 0.06);
+            border: 1px dashed rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+
+        .install-banner p {
+            font-size: 0.78em;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .install-btn {
+            padding: 8px 20px;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 0.82em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .install-btn:hover {
+            background: rgba(212, 175, 55, 0.25);
+        }
+
+        /* Responsive */
+        @media (max-width: 420px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+
+            .card {
+                padding: 22px 16px;
+                border-radius: 16px;
+            }
+
+            h1 {
+                font-size: 1.2em;
+            }
+
+            .logo {
+                width: 72px;
+                height: 72px;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .row-two {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .result-total {
+                font-size: 1.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- Header -->
+        <div class="header">
+            <img src="logo.png" alt="GA Entregas Express" class="logo" onerror="this.style.display='none'">
+            <h1>GA ENTREGAS EXPRESS</h1>
+            <p class="subtitle">Calculadora Automática Gratuita</p>
+        </div>
+
+        <!-- Distância -->
+        <div class="form-group">
+            <label class="field-label" for="distancia">📏 Distância (km)</label>
+            <input type="number" id="distancia" min="0" step="0.1" placeholder="Ex: 12.5" inputmode="decimal">
+            <div class="hint">
+                Veja a distância no <a href="https://www.google.com.br/maps/dir/" target="_blank" rel="noopener">Google Maps</a> e digite aqui
+            </div>
+        </div>
+
+        <!-- Serviço -->
+        <div class="form-group">
+            <label class="field-label" for="servico">🔧 Tipo de Serviço</label>
+            <select id="servico">
+                <option value="agendada">Agendada (Rota Comercial) — até 40 km</option>
+                <option value="avulsa">Avulsa / Emergência</option>
+                <option value="intermunicipal">Intermunicipal (acima de 40 km)</option>
+            </select>
+        </div>
+
+        <!-- Adicionais -->
+        <div class="section-label">Adicionais</div>
+        <div class="checkbox-group">
+            <label class="option-card" id="cardRetorno" for="retorno">
+                <input type="checkbox" id="retorno" onchange="atualizarCard('retorno','cardRetorno')">
+                <span class="option-text">
+                    <span class="option-title">Retorno</span>
+                    <span class="option-desc">Bate e volta · +60%</span>
+                </span>
+            </label>
+            <label class="option-card" id="cardCondominio" for="condominio">
+                <input type="checkbox" id="condominio" onchange="atualizarCard('condominio','cardCondominio')">
+                <span class="option-text">
+                    <span class="option-title">Condomínio</span>
+                    <span class="option-desc">Horizontal · +R$ 5,00</span>
+                </span>
+            </label>
+        </div>
+
+        <!-- Valor NF e Espera -->
+        <div class="row-two">
+            <div class="form-group">
+                <label class="field-label" for="valorNf">💰 Valor NF (R$)</label>
+                <input type="text" inputmode="decimal" id="valorNf" placeholder="Ex: 600,00">
+            </div>
+            <div class="form-group">
+                <label class="field-label" for="tempoEspera">⏱️ Espera Extra (min)</label>
+                <input type="number" id="tempoEspera" min="0" placeholder="Além de 10 min" inputmode="numeric">
+            </div>
+        </div>
+
+        <!-- Botão -->
+        <button class="btn-calcular" id="btnCalcular" onclick="calcularCorrida()">
+            CALCULAR VALOR
+        </button>
+
+        <!-- Aviso -->
+        <div class="warning" id="avisoServico"></div>
+
+        <!-- Resultado -->
+        <div class="result" id="painelResultado" style="display:none;">
+            <div class="result-distance" id="distanciaUsada">📏 0 km</div>
+            <div class="result-label">Valor Total Previsto</div>
+            <div class="result-total" id="valorTotal">R$ 0,00</div>
+            <div class="breakdown">
+                <div class="breakdown-title">Detalhamento</div>
+                <div id="detalhamento"></div>
+            </div>
+        </div>
+
+        <!-- Install PWA Banner -->
+        <div class="install-banner" id="installBanner">
+            <p>📲 Instale o app na tela inicial do seu celular!</p>
+            <button class="install-btn" id="installBtn" onclick="instalarApp()">Instalar App</button>
+        </div>
+
+        <div class="footer">
+            Valores estimados · GA Entregas Express © 2026
+        </div>
+    </div>
+
+    <script>
+        // ─── Service Worker Registration ────────────────────────────────
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then((reg) => console.log('SW registrado:', reg.scope))
+                    .catch((err) => console.log('Falha SW:', err));
+            });
+        }
+
+        // ─── PWA Install Prompt ─────────────────────────────────────────
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').style.display = 'block';
+        });
+
+        function instalarApp() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') {
+                    document.getElementById('installBanner').style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installBanner').style.display = 'none';
+            deferredPrompt = null;
+        });
+
+        // ─── Utilities ──────────────────────────────────────────────────
+
+        /**
+         * Converte "600,50" ou "600.50" em número.
+         * Aceita formato BR (vírgula) e internacional (ponto).
+         */
+        function parseValorBR(str) {
+            if (!str) return 0;
+            const limpo = str.trim().replace(/\./g, '').replace(',', '.');
+            const n = parseFloat(limpo);
+            return isNaN(n) || n < 0 ? 0 : n;
+        }
+
+        function formatarReais(valor) {
+            return 'R$ ' + valor.toFixed(2).replace('.', ',');
+        }
+
+        function atualizarCard(inputId, cardId) {
+            const marcado = document.getElementById(inputId).checked;
+            document.getElementById(cardId).classList.toggle('checked', marcado);
+        }
+
+        function mostrarAviso(msg) {
+            const aviso = document.getElementById('avisoServico');
+            if (msg) {
+                aviso.textContent = msg;
+                aviso.style.display = 'block';
+            } else {
+                aviso.style.display = 'none';
+            }
+        }
+
+        function nomeServico(servico) {
+            const nomes = {
+                'agendada': 'Agendada',
+                'avulsa': 'Avulsa / Emergência',
+                'intermunicipal': 'Intermunicipal'
+            };
+            return nomes[servico] || servico;
+        }
+
+        // ─── Cálculo Principal ──────────────────────────────────────────
+
+        function calcularCorrida() {
+            mostrarAviso(null);
+            document.getElementById('painelResultado').style.display = 'none';
+
+            const km = parseFloat(document.getElementById('distancia').value);
+            if (isNaN(km) || km <= 0) {
+                mostrarAviso('Por favor, digite uma distância válida em km!');
+                document.getElementById('avisoServico').style.display = 'block';
+                document.getElementById('distancia').focus();
+                return;
+            }
+
+            const servico = document.getElementById('servico').value;
+            const retorno = document.getElementById('retorno').checked;
+            const condominio = document.getElementById('condominio').checked;
+            const valorNf = parseValorBR(document.getElementById('valorNf').value);
+            const tempoEspera = Math.max(0, parseInt(document.getElementById('tempoEspera').value) || 0);
+
+            let valorBase = 0;
+            let avisoTexto = null;
+
+            // ── Regras de preço por tipo de serviço ──
+            if (servico === 'agendada') {
+                if (km > 40) {
+                    avisoTexto = `${km.toFixed(1)} km está fora da faixa de "Agendada" (até 40 km). Calculando como Intermunicipal (R$ 4,00/km).`;
+                    valorBase = km * 4.00;
+                } else if (km <= 5) valorBase = 20.00;
+                else if (km <= 10) valorBase = 25.00;
+                else if (km <= 15) valorBase = 35.00;
+                else if (km <= 20) valorBase = 50.00;
+                else valorBase = km * 3.00;
+            } else if (servico === 'avulsa') {
+                valorBase = (km * 3.50) + 7.00;
+            } else if (servico === 'intermunicipal') {
+                if (km <= 40) {
+                    avisoTexto = `${km.toFixed(1)} km é menor que 40 km, faixa normalmente coberta por "Agendada" ou "Avulsa". Calculando mesmo assim como Intermunicipal.`;
+                }
+                valorBase = km * 4.00;
+            }
+
+            // ── Adicionais ──
+            const adicRetorno = retorno ? (valorBase * 0.60) : 0;
+            const adicCondo = condominio ? 5.00 : 0;
+            const taxaRisco = (valorNf > 500) ? (valorNf * 0.05) : 0;
+            const taxaEspera = tempoEspera * 0.70;
+
+            // ── Total ──
+            const total = valorBase + adicRetorno + adicCondo + taxaRisco + taxaEspera;
+
+            // ── Exibir aviso se necessário ──
+            if (avisoTexto) mostrarAviso(avisoTexto);
+
+            // ── Atualizar resultado ──
+            document.getElementById('distanciaUsada').innerHTML = `📏 ${km.toFixed(1)} km`;
+            document.getElementById('valorTotal').innerText = formatarReais(total);
+
+            // ── Breakdown detalhado ──
+            let html = '';
+            html += montarLinha(`Valor base (${nomeServico(servico)})`, valorBase);
+            if (adicRetorno > 0) html += montarLinha('Retorno / Bate e volta (+60%)', adicRetorno);
+            if (adicCondo > 0) html += montarLinha('Condomínio horizontal', adicCondo);
+            if (taxaRisco > 0) html += montarLinha('Taxa de risco (5% da NF)', taxaRisco);
+            if (taxaEspera > 0) html += montarLinha(`Espera excedente (${tempoEspera} min × R$0,70)`, taxaEspera);
+            html += `<div class="breakdown-row total-row">
+                        <span class="lbl">Total</span>
+                        <span class="val">${formatarReais(total)}</span>
+                     </div>`;
+
+            document.getElementById('detalhamento').innerHTML = html;
+            document.getElementById('painelResultado').style.display = 'block';
+
+            // Scroll suave
+            document.getElementById('painelResultado').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function montarLinha(label, valor) {
+            return `<div class="breakdown-row">
+                        <span class="lbl">${label}</span>
+                        <span class="val">${formatarReais(valor)}</span>
+                    </div>`;
+        }
+
+        // ── Atalhos de teclado ──
+        document.getElementById('distancia').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') calcularCorrida();
+        });
+    </script>
+</body>
+</html>
