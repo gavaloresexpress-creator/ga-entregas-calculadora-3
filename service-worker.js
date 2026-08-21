@@ -1,7 +1,7 @@
-const CACHE_NAME = 'ga-entregas-v1';
+const CACHE_NAME = 'ga-entregas-v2';
 const ASSETS = [
     './',
-    './index2.html',
+    './index.html',
     './icon-192.png',
     './logo.png',
     './manifest.json'
