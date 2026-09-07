@@ -521,10 +521,157 @@
                 font-size: 1.9em;
             }
         }
+
+        /* Settings Modal */
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            font-size: 1.2em;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            z-index: 10;
+        }
+
+        .settings-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: rotate(45deg);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: linear-gradient(160deg, rgba(22, 23, 30, 0.98), rgba(15, 16, 22, 0.99));
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            padding: 24px;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            padding-bottom: 12px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.2em;
+            color: #d4af37;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #ddd;
+        }
+        
+        .config-section {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .config-section-title {
+            font-size: 0.85em;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85em;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .btn-save {
+            background: #d4af37;
+            color: #000;
+        }
+
+        .btn-save:hover {
+            background: #e0be4a;
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.05);
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
     <div class="card">
+        <button class="settings-btn" onclick="abrirConfiguracoes()" title="Configurações">⚙️</button>
         <!-- Header -->
         <div class="header">
             <img src="logo.png" alt="GA Entregas Express" class="logo" onerror="this.style.display='none'">
@@ -612,6 +759,97 @@
         </div>
     </div>
 
+    <!-- Modal de Configurações -->
+    <div class="modal-overlay" id="configModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configurações</h2>
+                <button class="close-modal" onclick="fecharConfiguracoes()">&times;</button>
+            </div>
+            
+            <div class="config-section">
+                <div class="config-section-title">Serviço Agendado (R$)</div>
+                <div class="row-two">
+                    <div class="form-group">
+                        <label class="field-label">Até 5 km</label>
+                        <input type="number" id="cfg_agendada_5" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Até 10 km</label>
+                        <input type="number" id="cfg_agendada_10" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Até 15 km</label>
+                        <input type="number" id="cfg_agendada_15" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Até 20 km</label>
+                        <input type="number" id="cfg_agendada_20" step="0.5">
+                    </div>
+                </div>
+                <div class="row-two">
+                    <div class="form-group">
+                        <label class="field-label">Acima 20 km (por km)</label>
+                        <input type="number" id="cfg_agendada_km" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Acima 40 km (por km)</label>
+                        <input type="number" id="cfg_agendada_40_km" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-section-title">Serviço Avulso</div>
+                <div class="row-two">
+                    <div class="form-group">
+                        <label class="field-label">Taxa Fixa (R$)</label>
+                        <input type="number" id="cfg_avulsa_fixa" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Por km (R$)</label>
+                        <input type="number" id="cfg_avulsa_km" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-section-title">Intermunicipal</div>
+                <div class="form-group">
+                    <label class="field-label">Por km (R$)</label>
+                    <input type="number" id="cfg_inter_km" step="0.1">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-section-title">Adicionais</div>
+                <div class="row-two">
+                    <div class="form-group">
+                        <label class="field-label">Retorno (%)</label>
+                        <input type="number" id="cfg_retorno_pct" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Condomínio (R$)</label>
+                        <input type="number" id="cfg_condominio" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Risco NF > 500 (%)</label>
+                        <input type="number" id="cfg_risco_pct" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Espera (R$/min)</label>
+                        <input type="number" id="cfg_espera_min" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-modal btn-reset" onclick="restaurarPadroes()">Padrões</button>
+                <button class="btn-modal btn-save" onclick="salvarConfiguracoes()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ─── Service Worker Registration ────────────────────────────────
         if ('serviceWorker' in navigator) {
@@ -648,6 +886,115 @@
         });
 
         // ─── Utilities ──────────────────────────────────────────────────
+
+        // ─── Configurações ──────────────────────────────────────────────
+        const defaultConfig = {
+            agendada: { km5: 20.00, km10: 25.00, km15: 35.00, km20: 50.00, kmMais20: 3.00, kmMais40: 4.00 },
+            avulsa: { fixa: 7.00, porKm: 3.50 },
+            intermunicipal: { porKm: 4.00 },
+            adicionais: { retornoPct: 60, condominio: 5.00, riscoPct: 5, esperaMin: 0.70 }
+        };
+
+        let appConfig = { ...defaultConfig };
+
+        function carregarConfiguracoes() {
+            const salva = localStorage.getItem('ga_entregas_config');
+            if (salva) {
+                try {
+                    const parsed = JSON.parse(salva);
+                    // Faz o merge com o default para garantir que nenhuma chave fique faltando
+                    appConfig = { 
+                        agendada: { ...defaultConfig.agendada, ...parsed.agendada },
+                        avulsa: { ...defaultConfig.avulsa, ...parsed.avulsa },
+                        intermunicipal: { ...defaultConfig.intermunicipal, ...parsed.intermunicipal },
+                        adicionais: { ...defaultConfig.adicionais, ...parsed.adicionais }
+                    };
+                } catch (e) {
+                    console.error('Erro ao ler configs', e);
+                    appConfig = { ...defaultConfig };
+                }
+            }
+            atualizarLabelsConfig();
+        }
+
+        function atualizarInputsConfig() {
+            document.getElementById('cfg_agendada_5').value = appConfig.agendada.km5;
+            document.getElementById('cfg_agendada_10').value = appConfig.agendada.km10;
+            document.getElementById('cfg_agendada_15').value = appConfig.agendada.km15;
+            document.getElementById('cfg_agendada_20').value = appConfig.agendada.km20;
+            document.getElementById('cfg_agendada_km').value = appConfig.agendada.kmMais20;
+            document.getElementById('cfg_agendada_40_km').value = appConfig.agendada.kmMais40;
+            
+            document.getElementById('cfg_avulsa_fixa').value = appConfig.avulsa.fixa;
+            document.getElementById('cfg_avulsa_km').value = appConfig.avulsa.porKm;
+            
+            document.getElementById('cfg_inter_km').value = appConfig.intermunicipal.porKm;
+            
+            document.getElementById('cfg_retorno_pct').value = appConfig.adicionais.retornoPct;
+            document.getElementById('cfg_condominio').value = appConfig.adicionais.condominio;
+            document.getElementById('cfg_risco_pct').value = appConfig.adicionais.riscoPct;
+            document.getElementById('cfg_espera_min').value = appConfig.adicionais.esperaMin;
+        }
+
+        function atualizarLabelsConfig() {
+            document.querySelector('#cardRetorno .option-desc').textContent = `Bate e volta · +${appConfig.adicionais.retornoPct}%`;
+            document.querySelector('#cardCondominio .option-desc').textContent = `Horizontal · +R$ ${appConfig.adicionais.condominio.toFixed(2).replace('.',',')}`;
+        }
+
+        function salvarConfiguracoes() {
+            appConfig.agendada.km5 = parseFloat(document.getElementById('cfg_agendada_5').value) || 0;
+            appConfig.agendada.km10 = parseFloat(document.getElementById('cfg_agendada_10').value) || 0;
+            appConfig.agendada.km15 = parseFloat(document.getElementById('cfg_agendada_15').value) || 0;
+            appConfig.agendada.km20 = parseFloat(document.getElementById('cfg_agendada_20').value) || 0;
+            appConfig.agendada.kmMais20 = parseFloat(document.getElementById('cfg_agendada_km').value) || 0;
+            appConfig.agendada.kmMais40 = parseFloat(document.getElementById('cfg_agendada_40_km').value) || 0;
+            
+            appConfig.avulsa.fixa = parseFloat(document.getElementById('cfg_avulsa_fixa').value) || 0;
+            appConfig.avulsa.porKm = parseFloat(document.getElementById('cfg_avulsa_km').value) || 0;
+            
+            appConfig.intermunicipal.porKm = parseFloat(document.getElementById('cfg_inter_km').value) || 0;
+            
+            appConfig.adicionais.retornoPct = parseFloat(document.getElementById('cfg_retorno_pct').value) || 0;
+            appConfig.adicionais.condominio = parseFloat(document.getElementById('cfg_condominio').value) || 0;
+            appConfig.adicionais.riscoPct = parseFloat(document.getElementById('cfg_risco_pct').value) || 0;
+            appConfig.adicionais.esperaMin = parseFloat(document.getElementById('cfg_espera_min').value) || 0;
+
+            localStorage.setItem('ga_entregas_config', JSON.stringify(appConfig));
+            atualizarLabelsConfig();
+            fecharConfiguracoes();
+            
+            // Recalcula se o painel de resultado estiver aberto
+            if (document.getElementById('painelResultado').style.display === 'block') {
+                calcularCorrida();
+            }
+        }
+
+        function restaurarPadroes() {
+            if(confirm('Restaurar valores originais?')) {
+                appConfig = JSON.parse(JSON.stringify(defaultConfig));
+                atualizarInputsConfig();
+            }
+        }
+
+        function abrirConfiguracoes() {
+            atualizarInputsConfig();
+            document.getElementById('configModal').classList.add('active');
+        }
+
+        function fecharConfiguracoes() {
+            document.getElementById('configModal').classList.remove('active');
+        }
+        
+        // Fechar modal clicando fora
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('configModal');
+            if (e.target === modal) {
+                fecharConfiguracoes();
+            }
+        });
+
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', carregarConfiguracoes);
 
         /**
          * Converte "600,50" ou "600.50" em número.
@@ -714,27 +1061,27 @@
             // ── Regras de preço por tipo de serviço ──
             if (servico === 'agendada') {
                 if (km > 40) {
-                    avisoTexto = `${km.toFixed(1)} km está fora da faixa de "Agendada" (até 40 km). Calculando como Intermunicipal (R$ 4,00/km).`;
-                    valorBase = km * 4.00;
-                } else if (km <= 5) valorBase = 20.00;
-                else if (km <= 10) valorBase = 25.00;
-                else if (km <= 15) valorBase = 35.00;
-                else if (km <= 20) valorBase = 50.00;
-                else valorBase = km * 3.00;
+                    avisoTexto = `${km.toFixed(1)} km está fora da faixa de "Agendada" (até 40 km). Calculando como Intermunicipal (R$ ${appConfig.agendada.kmMais40.toFixed(2).replace('.',',')}/km).`;
+                    valorBase = km * appConfig.agendada.kmMais40;
+                } else if (km <= 5) valorBase = appConfig.agendada.km5;
+                else if (km <= 10) valorBase = appConfig.agendada.km10;
+                else if (km <= 15) valorBase = appConfig.agendada.km15;
+                else if (km <= 20) valorBase = appConfig.agendada.km20;
+                else valorBase = km * appConfig.agendada.kmMais20;
             } else if (servico === 'avulsa') {
-                valorBase = (km * 3.50) + 7.00;
+                valorBase = (km * appConfig.avulsa.porKm) + appConfig.avulsa.fixa;
             } else if (servico === 'intermunicipal') {
                 if (km <= 40) {
                     avisoTexto = `${km.toFixed(1)} km é menor que 40 km, faixa normalmente coberta por "Agendada" ou "Avulsa". Calculando mesmo assim como Intermunicipal.`;
                 }
-                valorBase = km * 4.00;
+                valorBase = km * appConfig.intermunicipal.porKm;
             }
 
             // ── Adicionais ──
-            const adicRetorno = retorno ? (valorBase * 0.60) : 0;
-            const adicCondo = condominio ? 5.00 : 0;
-            const taxaRisco = (valorNf > 500) ? (valorNf * 0.05) : 0;
-            const taxaEspera = tempoEspera * 0.70;
+            const adicRetorno = retorno ? (valorBase * (appConfig.adicionais.retornoPct / 100)) : 0;
+            const adicCondo = condominio ? appConfig.adicionais.condominio : 0;
+            const taxaRisco = (valorNf > 500) ? (valorNf * (appConfig.adicionais.riscoPct / 100)) : 0;
+            const taxaEspera = tempoEspera * appConfig.adicionais.esperaMin;
 
             // ── Total ──
             const total = valorBase + adicRetorno + adicCondo + taxaRisco + taxaEspera;
@@ -749,10 +1096,10 @@
             // ── Breakdown detalhado ──
             let html = '';
             html += montarLinha(`Valor base (${nomeServico(servico)})`, valorBase);
-            if (adicRetorno > 0) html += montarLinha('Retorno / Bate e volta (+60%)', adicRetorno);
+            if (adicRetorno > 0) html += montarLinha(`Retorno / Bate e volta (+${appConfig.adicionais.retornoPct}%)`, adicRetorno);
             if (adicCondo > 0) html += montarLinha('Condomínio horizontal', adicCondo);
-            if (taxaRisco > 0) html += montarLinha('Taxa de risco (5% da NF)', taxaRisco);
-            if (taxaEspera > 0) html += montarLinha(`Espera excedente (${tempoEspera} min × R$0,70)`, taxaEspera);
+            if (taxaRisco > 0) html += montarLinha(`Taxa de risco (${appConfig.adicionais.riscoPct}% da NF)`, taxaRisco);
+            if (taxaEspera > 0) html += montarLinha(`Espera excedente (${tempoEspera} min × R$${appConfig.adicionais.esperaMin.toFixed(2).replace('.',',')})`, taxaEspera);
             html += `<div class="breakdown-row total-row">
                         <span class="lbl">Total</span>
                         <span class="val">${formatarReais(total)}</span>
