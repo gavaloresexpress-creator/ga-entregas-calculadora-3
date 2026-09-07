@@ -667,6 +667,141 @@
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
+
+        /* Delivery List */
+        .delivery-list-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px dashed rgba(212, 175, 55, 0.3);
+            display: none; /* Shown when there are items */
+            animation: fadeSlideIn 0.4s ease-out;
+        }
+        
+        .delivery-list-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-clear-list {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 0.75em;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .btn-clear-list:hover {
+            background: rgba(255,255,255,0.05);
+            color: #ddd;
+        }
+
+        .delivery-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delivery-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .delivery-name {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #eee;
+        }
+        
+        .delivery-desc {
+            font-size: 0.75em;
+            color: #888;
+        }
+
+        .delivery-price {
+            font-size: 1em;
+            font-weight: 700;
+            color: #d4af37;
+        }
+
+        .btn-remove {
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            color: #ff5555;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8em;
+        }
+        
+        .btn-remove:hover {
+            background: rgba(255, 50, 50, 0.2);
+        }
+        
+        .delivery-list-total {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .total-list-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #ccc;
+            text-transform: uppercase;
+        }
+        
+        .total-list-value {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #d4af37;
+        }
+
+        .btn-add-list {
+            width: 100%;
+            padding: 12px;
+            margin-top: 16px;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #d4af37;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter', Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-list:hover {
+            background: rgba(212, 175, 55, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -745,6 +880,22 @@
             <div class="breakdown">
                 <div class="breakdown-title">Detalhamento</div>
                 <div id="detalhamento"></div>
+            </div>
+            <button class="btn-add-list" onclick="adicionarEntregaAtual()">➕ ADICIONAR À LISTA</button>
+        </div>
+
+        <!-- Lista de Entregas -->
+        <div class="delivery-list-section" id="secaoListaEntregas">
+            <div class="delivery-list-title">
+                <span>📦 Múltiplas Entregas</span>
+                <button class="btn-clear-list" onclick="limparLista()">Limpar</button>
+            </div>
+            <div id="containerListaEntregas">
+                <!-- Itens da lista -->
+            </div>
+            <div class="delivery-list-total">
+                <span class="total-list-label">Total Final</span>
+                <span class="total-list-value" id="valorTotalLista">R$ 0,00</span>
             </div>
         </div>
 
@@ -996,6 +1147,69 @@
         // Inicializar
         window.addEventListener('DOMContentLoaded', carregarConfiguracoes);
 
+        // ─── Lista de Entregas ──────────────────────────────────────────
+        let listaEntregas = [];
+        let ultimaEntregaCalculada = null;
+
+        function adicionarEntregaAtual() {
+            if (!ultimaEntregaCalculada) return;
+            
+            listaEntregas.push(ultimaEntregaCalculada);
+            renderizarLista();
+            
+            // Ocultar painel de resultado e limpar distância para próxima
+            document.getElementById('painelResultado').style.display = 'none';
+            document.getElementById('distancia').value = '';
+            document.getElementById('distancia').focus();
+            ultimaEntregaCalculada = null;
+        }
+
+        function removerEntrega(index) {
+            listaEntregas.splice(index, 1);
+            renderizarLista();
+        }
+
+        function limparLista() {
+            if (listaEntregas.length > 0 && confirm('Limpar todas as entregas da lista?')) {
+                listaEntregas = [];
+                renderizarLista();
+            }
+        }
+
+        function renderizarLista() {
+            const secao = document.getElementById('secaoListaEntregas');
+            const container = document.getElementById('containerListaEntregas');
+            const totalEl = document.getElementById('valorTotalLista');
+            
+            if (listaEntregas.length === 0) {
+                secao.style.display = 'none';
+                return;
+            }
+            
+            secao.style.display = 'block';
+            let html = '';
+            let somaTotal = 0;
+            
+            listaEntregas.forEach((entrega, index) => {
+                somaTotal += entrega.total;
+                html += `
+                <div class="delivery-item">
+                    <div class="delivery-info">
+                        <span class="delivery-name">Entrega ${index + 1}</span>
+                        <span class="delivery-desc">${entrega.km.toFixed(1)} km · ${entrega.servicoNome}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="delivery-price">${formatarReais(entrega.total)}</span>
+                        <button class="btn-remove" onclick="removerEntrega(${index})" title="Remover entrega">🗑️</button>
+                    </div>
+                </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            totalEl.innerText = formatarReais(somaTotal);
+        }
+
         /**
          * Converte "600,50" ou "600.50" em número.
          * Aceita formato BR (vírgula) e internacional (ponto).
@@ -1085,6 +1299,13 @@
 
             // ── Total ──
             const total = valorBase + adicRetorno + adicCondo + taxaRisco + taxaEspera;
+            
+            // ── Guardar última entrega calculada ──
+            ultimaEntregaCalculada = {
+                km: km,
+                servicoNome: nomeServico(servico),
+                total: total
+            };
 
             // ── Exibir aviso se necessário ──
             if (avisoTexto) mostrarAviso(avisoTexto);
