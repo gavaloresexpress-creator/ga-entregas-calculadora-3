@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora GA Entregas Express</title>
-    <meta name="description" content="Calculadora de preços para entregas de moto - GA Entregas Express. Calcule o valor da sua entrega de forma rápida.">
-
-    <!-- PWA -->
+    <title>GA Entregas Express</title>
+    <meta name="description" content="Sistema completo para motoboys: calculadora de precos, diario de trabalho, manutencao da moto e analise de custos.">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0c10">
     <link rel="icon" href="icon-192.png">
@@ -14,1336 +12,723 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GA Entregas">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', Arial, sans-serif;
-            background-color: #08090d;
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Background ambient glows */
-        body::before {
-            content: '';
-            position: fixed;
-            top: -200px;
-            left: -100px;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.07) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: -150px;
-            right: -80px;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Main card */
-        .card {
-            max-width: 480px;
-            width: 100%;
-            background: linear-gradient(160deg, rgba(18, 19, 26, 0.97), rgba(12, 13, 18, 0.99));
-            padding: 28px 24px;
-            border-radius: 20px;
-            border: 1px solid rgba(212, 175, 55, 0.12);
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.5),
-                0 0 80px rgba(212, 175, 55, 0.03),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03);
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-            padding-bottom: 18px;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-        }
-
-        .logo {
-            display: block;
-            width: 88px;
-            height: 88px;
-            margin: 0 auto 12px auto;
-            object-fit: contain;
-            border-radius: 18px;
-            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
-        }
-
-        h1 {
-            font-size: 1.4em;
-            font-weight: 800;
-            background: linear-gradient(135deg, #d4af37, #f5d76e, #d4af37);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 0.5px;
-            animation: shimmer 4s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { background-position: 0% center; }
-            50% { background-position: 200% center; }
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 0.78em;
-            margin-top: 4px;
-            font-weight: 400;
-        }
-
-        /* Form groups */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label.field-label {
-            font-weight: 600;
-            font-size: 0.78em;
-            display: block;
-            margin-bottom: 6px;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            background: rgba(255, 255, 255, 0.04);
-            color: #fff;
-            font-family: 'Inter', Arial, sans-serif;
-            font-size: 0.92em;
-            transition: all 0.25s ease;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: rgba(212, 175, 55, 0.5);
-            background: rgba(212, 175, 55, 0.04);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08);
-        }
-
-        input::placeholder {
-            color: #444;
-        }
-
-        select option {
-            background: #1a1c23;
-            color: #fff;
-        }
-
-        .hint {
-            font-size: 0.72em;
-            color: #555;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .hint a {
-            color: #d4af37;
-            text-decoration: none;
-        }
-
-        .hint a:hover {
-            text-decoration: underline;
-        }
-
-        /* Checkbox cards */
-        .section-label {
-            font-weight: 600;
-            font-size: 0.78em;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 10px;
-        }
-
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .option-card {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 14px 12px;
-            background: rgba(255, 255, 255, 0.025);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .option-card:hover {
-            border-color: rgba(212, 175, 55, 0.2);
-            background: rgba(212, 175, 55, 0.02);
-        }
-
-        .option-card.checked {
-            border-color: rgba(212, 175, 55, 0.4);
-            background: rgba(212, 175, 55, 0.06);
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.05);
-        }
-
-        .option-card input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            min-width: 20px;
-            margin: 1px 0 0 0;
-            border: 2px solid rgba(212, 175, 55, 0.25);
-            border-radius: 6px;
-            background: rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .option-card input[type="checkbox"]:checked {
-            border-color: #d4af37;
-            background: #d4af37;
-        }
-
-        .option-card input[type="checkbox"]:checked::after {
-            content: "✓";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #000;
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .option-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .option-title {
-            font-weight: 600;
-            font-size: 0.85em;
-            color: #ddd;
-        }
-
-        .option-desc {
-            font-size: 0.7em;
-            color: #666;
-        }
-
-        /* Two column layout */
-        .row-two {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* Button */
-        .btn-calcular {
-            width: 100%;
-            padding: 14px;
-            margin-top: 20px;
-            background: linear-gradient(135deg, #d4af37, #c5a028);
-            border: none;
-            font-size: 0.92em;
-            font-weight: 700;
-            color: #0a0a0a;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Inter', Arial, sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-calcular::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-calcular:hover {
-            background: linear-gradient(135deg, #e0be4a, #d4af37);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(212, 175, 55, 0.25);
-        }
-
-        .btn-calcular:hover::before {
-            left: 100%;
-        }
-
-        .btn-calcular:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);
-        }
-
-        /* Warning */
-        .warning {
-            margin-top: 16px;
-            padding: 12px 14px;
-            background: rgba(170, 50, 50, 0.08);
-            border: 1px solid rgba(170, 50, 50, 0.25);
-            border-radius: 10px;
-            font-size: 0.82em;
-            color: #ff9090;
-            display: none;
-            animation: fadeSlideIn 0.3s ease;
-            line-height: 1.5;
-        }
-
-        .warning::before {
-            content: '⚠️ ';
-        }
-
-        /* Result panel */
-        .result {
-            margin-top: 20px;
-            padding: 22px 18px;
-            background: linear-gradient(150deg, rgba(212, 175, 55, 0.07), rgba(212, 175, 55, 0.02));
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 14px;
-            text-align: center;
-            animation: fadeSlideIn 0.4s ease-out;
-        }
-
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-distance {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8em;
-            color: #888;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 5px 14px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-        }
-
-        .result-label {
-            font-size: 0.82em;
-            color: #999;
-            font-weight: 500;
-        }
-
-        .result-total {
-            font-size: 2.4em;
-            font-weight: 800;
-            background: linear-gradient(135deg, #d4af37, #f5d76e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 6px 0 0 0;
-            line-height: 1.2;
-        }
-
-        /* Breakdown */
-        .breakdown {
-            text-align: left;
-            margin-top: 16px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(212, 175, 55, 0.1);
-        }
-
-        .breakdown-title {
-            font-size: 0.7em;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .breakdown-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            font-size: 0.82em;
-        }
-
-        .breakdown-row .lbl {
-            color: #888;
-            font-weight: 400;
-        }
-
-        .breakdown-row .val {
-            color: #bbb;
-            font-weight: 600;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .breakdown-row.total-row {
-            border-top: 1px solid rgba(212, 175, 55, 0.15);
-            margin-top: 8px;
-            padding-top: 10px;
-        }
-
-        .breakdown-row.total-row .lbl {
-            color: #d4af37;
-            font-weight: 700;
-        }
-
-        .breakdown-row.total-row .val {
-            color: #d4af37;
-            font-weight: 800;
-            font-size: 1.05em;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 18px;
-            font-size: 0.68em;
-            color: #3a3a3a;
-        }
-
-        /* Install banner */
-        .install-banner {
-            margin-top: 16px;
-            padding: 12px;
-            background: rgba(212, 175, 55, 0.06);
-            border: 1px dashed rgba(212, 175, 55, 0.2);
-            border-radius: 10px;
-            text-align: center;
-            display: none;
-            animation: fadeSlideIn 0.4s ease;
-        }
-
-        .install-banner p {
-            font-size: 0.78em;
-            color: #999;
-            margin-bottom: 8px;
-        }
-
-        .install-btn {
-            padding: 8px 20px;
-            background: rgba(212, 175, 55, 0.15);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: #d4af37;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Inter', Arial, sans-serif;
-            font-size: 0.82em;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .install-btn:hover {
-            background: rgba(212, 175, 55, 0.25);
-        }
-
-        /* Responsive */
-        @media (max-width: 420px) {
-            body {
-                padding: 10px;
-                align-items: flex-start;
-            }
-
-            .card {
-                padding: 22px 16px;
-                border-radius: 16px;
-            }
-
-            h1 {
-                font-size: 1.2em;
-            }
-
-            .logo {
-                width: 72px;
-                height: 72px;
-            }
-
-            .checkbox-group {
-                grid-template-columns: 1fr;
-            }
-
-            .row-two {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-
-            .result-total {
-                font-size: 1.9em;
-            }
-        }
-
-        /* Settings Modal */
-        .settings-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            color: #d4af37;
-            font-size: 1.2em;
-            padding: 8px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            z-index: 10;
-        }
-
-        .settings-btn:hover {
-            background: rgba(212, 175, 55, 0.1);
-            transform: rotate(45deg);
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: linear-gradient(160deg, rgba(22, 23, 30, 0.98), rgba(15, 16, 22, 0.99));
-            width: 90%;
-            max-width: 400px;
-            border-radius: 16px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-            padding: 24px;
-            max-height: 85vh;
-            overflow-y: auto;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            padding-bottom: 12px;
-        }
-
-        .modal-header h2 {
-            font-size: 1.2em;
-            color: #d4af37;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .close-modal:hover {
-            color: #ddd;
-        }
-        
-        .config-section {
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .config-section-title {
-            font-size: 0.85em;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .modal-footer {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .btn-modal {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85em;
-            cursor: pointer;
-            border: none;
-            text-transform: uppercase;
-            transition: all 0.2s;
-        }
-
-        .btn-save {
-            background: #d4af37;
-            color: #000;
-        }
-
-        .btn-save:hover {
-            background: #e0be4a;
-        }
-
-        .btn-reset {
-            background: rgba(255, 255, 255, 0.05);
-            color: #aaa;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-reset:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        /* Delivery List */
-        .delivery-list-section {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px dashed rgba(212, 175, 55, 0.3);
-            display: none; /* Shown when there are items */
-            animation: fadeSlideIn 0.4s ease-out;
-        }
-        
-        .delivery-list-title {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: #d4af37;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn-clear-list {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 0.75em;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        
-        .btn-clear-list:hover {
-            background: rgba(255,255,255,0.05);
-            color: #ddd;
-        }
-
-        .delivery-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .delivery-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .delivery-name {
-            font-size: 0.85em;
-            font-weight: 600;
-            color: #eee;
-        }
-        
-        .delivery-desc {
-            font-size: 0.75em;
-            color: #888;
-        }
-
-        .delivery-price {
-            font-size: 1em;
-            font-weight: 700;
-            color: #d4af37;
-        }
-
-        .btn-remove {
-            background: rgba(255, 50, 50, 0.1);
-            border: 1px solid rgba(255, 50, 50, 0.3);
-            color: #ff5555;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.8em;
-        }
-        
-        .btn-remove:hover {
-            background: rgba(255, 50, 50, 0.2);
-        }
-        
-        .delivery-list-total {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02));
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .total-list-label {
-            font-size: 0.9em;
-            font-weight: 600;
-            color: #ccc;
-            text-transform: uppercase;
-        }
-        
-        .total-list-value {
-            font-size: 1.6em;
-            font-weight: 800;
-            color: #d4af37;
-        }
-
-        .btn-add-list {
-            width: 100%;
-            padding: 12px;
-            margin-top: 16px;
-            background: rgba(212, 175, 55, 0.15);
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            font-size: 0.85em;
-            font-weight: 700;
-            color: #d4af37;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Inter', Arial, sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-add-list:hover {
-            background: rgba(212, 175, 55, 0.25);
-        }
-    </style>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',Arial,sans-serif;background:#08090d;color:#e0e0e0;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;position:relative}
+body::before{content:'';position:fixed;top:-200px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(212,175,55,.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-150px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(212,175,55,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+.app-wrapper{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
+.card{width:100%;max-width:480px;min-height:100dvh;background:linear-gradient(160deg,rgba(18,19,26,.97),rgba(12,13,18,.99));display:flex;flex-direction:column}
+@media(min-width:520px){.app-wrapper{padding:20px;justify-content:center}.card{min-height:auto;height:calc(100dvh - 40px);max-height:900px;border-radius:24px;border:1px solid rgba(212,175,55,.12);box-shadow:0 8px 32px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.03)}}
+.app-header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(212,175,55,.1);flex-shrink:0;background:rgba(10,11,16,.9)}
+.header-logo{width:38px;height:38px;border-radius:9px;object-fit:contain;flex-shrink:0}
+.header-title{flex:1;min-width:0}
+.header-title h1{font-size:.92em;font-weight:800;background:linear-gradient(135deg,#d4af37,#f5d76e,#d4af37);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s ease-in-out infinite;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-title p{font-size:.62em;color:#555;margin-top:1px}
+@keyframes shimmer{0%,100%{background-position:0% center}50%{background-position:200% center}}
+.settings-btn{background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);color:#d4af37;font-size:1.05em;padding:0;border-radius:10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0}
+.settings-btn:hover{background:rgba(212,175,55,.1);transform:rotate(45deg)}
+.tab-panels{flex:1;overflow:hidden;position:relative}
+.tab-panel{display:none;position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:18px 14px;-webkit-overflow-scrolling:touch}
+.tab-panel.active{display:block}
+.tab-panel::-webkit-scrollbar{width:3px}
+.tab-panel::-webkit-scrollbar-thumb{background:rgba(212,175,55,.2);border-radius:2px}
+.bottom-nav{display:flex;border-top:1px solid rgba(212,175,55,.12);background:rgba(10,11,16,.95);flex-shrink:0;padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;background:none;border:none;cursor:pointer;border-radius:10px;transition:all .2s;position:relative}
+.nav-btn .nav-icon{font-size:1.25em;line-height:1;transition:transform .2s}
+.nav-btn .nav-lbl{font-size:.58em;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.3px;transition:color .2s}
+.nav-btn.active .nav-lbl{color:#d4af37}
+.nav-btn.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:2px;background:#d4af37;border-radius:0 0 2px 2px}
+.nav-btn.active .nav-icon{transform:scale(1.15)}
+.nav-btn:hover{background:rgba(212,175,55,.05)}
+.nav-badge{position:absolute;top:3px;right:calc(50% - 20px);background:#e05252;color:#fff;font-size:.48em;font-weight:800;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center;display:none}
+.nav-badge.on{display:block}
+.form-group{margin-bottom:13px}
+label.field-label{font-weight:600;font-size:.72em;display:block;margin-bottom:5px;color:#888;text-transform:uppercase;letter-spacing:.4px}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.04);color:#fff;font-family:'Inter',Arial,sans-serif;font-size:.88em;transition:all .25s;outline:none;-webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:rgba(212,175,55,.5);background:rgba(212,175,55,.04);box-shadow:0 0 0 3px rgba(212,175,55,.08)}
+input::placeholder{color:#444}
+select option{background:#1a1c23;color:#fff}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) saturate(3) hue-rotate(5deg);cursor:pointer}
+.row-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-primary{width:100%;padding:12px;background:linear-gradient(135deg,#d4af37,#c5a028);border:none;font-size:.88em;font-weight:700;color:#0a0a0a;border-radius:11px;cursor:pointer;font-family:'Inter',Arial,sans-serif;text-transform:uppercase;letter-spacing:.8px;transition:all .3s;position:relative;overflow:hidden}
+.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,175,55,.25)}
+.btn-primary:hover::before{left:100%}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{background:none;border:none;cursor:pointer;padding:5px;border-radius:6px;transition:all .2s;font-size:.9em;color:#666;line-height:1}
+.btn-ghost:hover{background:rgba(255,255,255,.07);color:#aaa}
+.btn-danger-ghost{background:none;border:none;cursor:pointer;padding:5px;border-radius:6px;transition:all .2s;font-size:.9em;color:#664444;line-height:1}
+.btn-danger-ghost:hover{background:rgba(255,50,50,.1);color:#ff6666}
+.btn-add{width:100%;padding:11px;background:rgba(212,175,55,.07);border:1px dashed rgba(212,175,55,.3);color:#d4af37;border-radius:10px;cursor:pointer;font-family:'Inter',Arial,sans-serif;font-size:.8em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+.btn-add:hover{background:rgba(212,175,55,.14)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:2px}
+.section-title{font-size:.85em;font-weight:700;color:#d4af37;display:flex;align-items:center;gap:5px}
+.section-count{background:rgba(212,175,55,.12);color:#d4af37;font-size:.67em;font-weight:700;padding:2px 7px;border-radius:8px}
+.section-count.alert{background:rgba(224,82,82,.15);color:#e05252}
+.divider{height:1px;background:rgba(255,255,255,.06);margin:16px 0}
+.empty-state{text-align:center;padding:28px 16px;color:#555}
+.empty-icon{font-size:2.4em;margin-bottom:10px}
+.empty-state p{font-size:.8em;line-height:1.6}
+.section-label{font-weight:600;font-size:.75em;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:9px}
+.checkbox-group{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
+.option-card{display:flex;align-items:flex-start;gap:9px;padding:12px 10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:12px;cursor:pointer;transition:all .2s;user-select:none}
+.option-card:hover{border-color:rgba(212,175,55,.2)}
+.option-card.checked{border-color:rgba(212,175,55,.4);background:rgba(212,175,55,.06)}
+.option-card input[type=checkbox]{appearance:none;-webkit-appearance:none;width:18px;height:18px;min-width:18px;margin:1px 0 0;border:2px solid rgba(212,175,55,.25);border-radius:5px;background:rgba(0,0,0,.3);cursor:pointer;position:relative;transition:all .2s}
+.option-card input[type=checkbox]:checked{border-color:#d4af37;background:#d4af37}
+.option-card input[type=checkbox]:checked::after{content:"✓";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#000;font-size:11px;font-weight:800}
+.option-text{display:flex;flex-direction:column;gap:2px}
+.option-title{font-weight:600;font-size:.82em;color:#ddd}
+.option-desc{font-size:.67em;color:#666}
+.hint{font-size:.7em;color:#555;margin-top:4px;display:flex;align-items:center;gap:4px}
+.hint a{color:#d4af37;text-decoration:none}
+.hint a:hover{text-decoration:underline}
+.btn-calcular{width:100%;padding:13px;margin-top:14px;background:linear-gradient(135deg,#d4af37,#c5a028);border:none;font-size:.9em;font-weight:700;color:#0a0a0a;border-radius:12px;cursor:pointer;font-family:'Inter',Arial,sans-serif;text-transform:uppercase;letter-spacing:.8px;transition:all .3s;position:relative;overflow:hidden}
+.btn-calcular::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+.btn-calcular:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,175,55,.25)}
+.btn-calcular:hover::before{left:100%}
+.btn-calcular:active{transform:translateY(0)}
+.warning{margin-top:12px;padding:10px 13px;background:rgba(170,50,50,.08);border:1px solid rgba(170,50,50,.25);border-radius:10px;font-size:.78em;color:#ff9090;display:none;line-height:1.5}
+.warning::before{content:'⚠️ '}
+.result{margin-top:14px;padding:18px 14px;background:linear-gradient(150deg,rgba(212,175,55,.07),rgba(212,175,55,.02));border:1px solid rgba(212,175,55,.2);border-radius:14px;text-align:center;animation:fadeUp .4s ease-out}
+.result-distance{display:inline-flex;align-items:center;gap:5px;font-size:.75em;color:#888;background:rgba(255,255,255,.04);padding:4px 11px;border-radius:20px;margin-bottom:8px}
+.result-label{font-size:.78em;color:#999;font-weight:500}
+.result-total{font-size:2.1em;font-weight:800;background:linear-gradient(135deg,#d4af37,#f5d76e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:4px 0 0;line-height:1.2}
+.breakdown{text-align:left;margin-top:12px;padding-top:11px;border-top:1px solid rgba(212,175,55,.1)}
+.breakdown-title{font-size:.67em;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:.78em}
+.breakdown-row .lbl{color:#888;font-weight:400}
+.breakdown-row .val{color:#bbb;font-weight:600;font-variant-numeric:tabular-nums}
+.breakdown-row.total-row{border-top:1px solid rgba(212,175,55,.15);margin-top:7px;padding-top:9px}
+.breakdown-row.total-row .lbl{color:#d4af37;font-weight:700}
+.breakdown-row.total-row .val{color:#d4af37;font-weight:800;font-size:1.05em}
+.delivery-list-section{margin-top:18px;padding-top:16px;border-top:1px dashed rgba(212,175,55,.25);display:none;animation:fadeUp .4s}
+.delivery-list-title{font-size:.95em;font-weight:700;color:#d4af37;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.btn-clear-list{background:none;border:none;color:#666;font-size:.7em;cursor:pointer;text-transform:uppercase;font-weight:600;letter-spacing:.5px;padding:3px 7px;border-radius:4px}
+.btn-clear-list:hover{background:rgba(255,255,255,.05);color:#ddd}
+.delivery-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:10px 13px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.delivery-info{display:flex;flex-direction:column;gap:3px}
+.delivery-name{font-size:.82em;font-weight:600;color:#eee}
+.delivery-desc{font-size:.7em;color:#888}
+.delivery-price{font-size:.93em;font-weight:700;color:#d4af37}
+.btn-remove{background:rgba(255,50,50,.1);border:1px solid rgba(255,50,50,.25);color:#ff5555;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.75em}
+.btn-remove:hover{background:rgba(255,50,50,.2)}
+.delivery-list-total{background:linear-gradient(135deg,rgba(212,175,55,.1),rgba(212,175,55,.02));border:1px solid rgba(212,175,55,.3);border-radius:11px;padding:13px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.total-list-label{font-size:.82em;font-weight:600;color:#ccc;text-transform:uppercase}
+.total-list-value{font-size:1.45em;font-weight:800;color:#d4af37}
+.btn-add-list{width:100%;padding:10px;margin-top:10px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.35);font-size:.8em;font-weight:700;color:#d4af37;border-radius:10px;cursor:pointer;font-family:'Inter',Arial,sans-serif;text-transform:uppercase;letter-spacing:.5px;transition:all .3s}
+.btn-add-list:hover{background:rgba(212,175,55,.18)}
+.install-banner{margin-top:14px;padding:11px;background:rgba(212,175,55,.06);border:1px dashed rgba(212,175,55,.2);border-radius:10px;text-align:center;display:none}
+.install-banner p{font-size:.74em;color:#999;margin-bottom:7px}
+.install-btn{padding:6px 16px;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:#d4af37;border-radius:7px;cursor:pointer;font-family:'Inter',Arial,sans-serif;font-size:.78em;font-weight:600;transition:all .2s}
+.install-btn:hover{background:rgba(212,175,55,.25)}
+.footer{text-align:center;margin-top:14px;margin-bottom:4px;font-size:.62em;color:#333}
+.diario-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.summary-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:11px 8px;text-align:center}
+.s-icon{font-size:1.15em;margin-bottom:3px}
+.s-val{font-size:.92em;font-weight:800;color:#d4af37;font-variant-numeric:tabular-nums}
+.s-lbl{font-size:.58em;color:#666;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.diario-form{background:rgba(255,255,255,.02);border:1px solid rgba(212,175,55,.12);border-radius:14px;padding:14px;margin-bottom:16px}
+.diario-form-title{font-size:.78em;font-weight:700;color:#d4af37;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.registro-dia{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 13px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;animation:fadeUp .3s}
+.reg-data{font-size:.7em;color:#888;margin-bottom:3px}
+.reg-km{font-size:.86em;font-weight:700;color:#eee}
+.reg-ganho{font-size:.78em;color:#6dca8a;font-weight:600;margin-top:2px}
+.reg-gas{font-size:.7em;color:#888;margin-top:2px}
+.reg-total{font-size:.98em;font-weight:800;color:#d4af37;text-align:right}
+.reg-margem{font-size:.63em;color:#888;text-align:right;margin-top:2px}
+.odometro-box{background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.02));border:1px solid rgba(212,175,55,.2);border-radius:14px;padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.odo-icon{font-size:1.8em}
+.odo-info{flex:1}
+.odo-label{font-size:.67em;color:#888;text-transform:uppercase;letter-spacing:.4px}
+.odo-valor{font-size:1.55em;font-weight:800;color:#d4af37;font-variant-numeric:tabular-nums;line-height:1.2}
+.odo-valor small{font-size:.38em;color:#888;font-weight:400}
+.btn-odo{padding:7px 13px;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:#d4af37;border-radius:8px;cursor:pointer;font-family:'Inter',Arial,sans-serif;font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:.3px;transition:all .2s;white-space:nowrap}
+.btn-odo:hover{background:rgba(212,175,55,.25)}
+.comp-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;margin-bottom:9px;transition:all .2s;animation:fadeUp .3s}
+.comp-card:hover{border-color:rgba(212,175,55,.15)}
+.comp-card.warn{border-color:rgba(230,160,30,.35)}
+.comp-card.danger{border-color:rgba(220,60,60,.35);animation:pulse-warn 2.5s ease infinite}
+@keyframes pulse-warn{0%,100%{box-shadow:0 0 0 0 rgba(220,60,60,.25)}50%{box-shadow:0 0 0 5px rgba(220,60,60,0)}}
+.comp-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.comp-icon-box{font-size:1.25em;width:34px;height:34px;background:rgba(255,255,255,.05);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.comp-name-grp{flex:1;min-width:0}
+.comp-name{font-size:.86em;font-weight:700;color:#eee}
+.comp-sub{font-size:.66em;color:#777;margin-top:1px}
+.comp-acts{display:flex;gap:1px;flex-shrink:0}
+.wear-lbl{display:flex;justify-content:space-between;font-size:.66em;color:#666;margin-bottom:4px}
+.wear-track{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.wear-fill{height:100%;border-radius:3px;transition:width .6s}
+.wear-fill.ok{background:linear-gradient(90deg,#4caf78,#6dca8a)}
+.wear-fill.warn{background:linear-gradient(90deg,#e0a020,#f0c030)}
+.wear-fill.danger{background:linear-gradient(90deg,#cc4040,#e05252)}
+.comp-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px}
+.comp-status{font-size:.68em;color:#666;flex:1;min-width:0}
+.comp-status.ok{color:#6dca8a}
+.comp-status.warn{color:#f0c030}
+.comp-status.danger{color:#e05252}
+.btn-troca{padding:6px 12px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);color:#d4af37;border-radius:8px;cursor:pointer;font-family:'Inter',Arial,sans-serif;font-size:.7em;font-weight:700;text-transform:uppercase;letter-spacing:.3px;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.btn-troca:hover{background:rgba(212,175,55,.22)}
+.custo-extra-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:11px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;animation:fadeUp .3s}
+.ce-icon{font-size:1.2em;width:32px;height:32px;background:rgba(255,255,255,.04);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ce-info{flex:1;min-width:0}
+.ce-name{font-size:.83em;font-weight:600;color:#ddd}
+.ce-detail{font-size:.67em;color:#777;margin-top:1px}
+.ce-val{font-size:.88em;font-weight:700;color:#e07575;text-align:right;white-space:nowrap}
+.ce-per{font-size:.6em;color:#666;text-align:right}
+.ce-acts{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
+.periodo-filter{display:flex;gap:5px;margin-bottom:16px}
+.periodo-btn{flex:1;padding:7px 2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#888;border-radius:8px;cursor:pointer;font-family:'Inter',Arial,sans-serif;font-size:.7em;font-weight:600;text-transform:uppercase;letter-spacing:.3px;transition:all .2s}
+.periodo-btn.active{background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.35);color:#d4af37}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.kpi-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px 11px;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi-card.kpi-r::before{background:linear-gradient(90deg,#6dca8a,transparent)}
+.kpi-card.kpi-k::before{background:linear-gradient(90deg,#6ab4d4,transparent)}
+.kpi-card.kpi-g::before{background:linear-gradient(90deg,#e07575,transparent)}
+.kpi-card.kpi-d::before{background:linear-gradient(90deg,#c87fdb,transparent)}
+.kpi-icon{font-size:1.05em;margin-bottom:5px}
+.kpi-val{font-size:1.25em;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi-card.kpi-r .kpi-val{color:#6dca8a}
+.kpi-card.kpi-k .kpi-val{color:#6ab4d4}
+.kpi-card.kpi-g .kpi-val{color:#e07575}
+.kpi-card.kpi-d .kpi-val{color:#c87fdb}
+.kpi-lbl{font-size:.62em;color:#666;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.analise-box{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;margin-bottom:12px}
+.analise-box-title{font-size:.72em;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:11px}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:.8em;border-bottom:1px solid rgba(255,255,255,.04)}
+.cr:last-child{border-bottom:none}
+.cr-lbl{color:#888;display:flex;align-items:center;gap:5px}
+.cr-val{font-weight:700;color:#bbb;font-variant-numeric:tabular-nums}
+.cr.subtotal{border-top:1px solid rgba(255,255,255,.06);margin-top:4px;padding-top:8px;border-bottom:none}
+.cr.subtotal .cr-lbl{color:#e07575;font-weight:700}
+.cr.subtotal .cr-val{color:#e07575;font-size:1.05em}
+.margem-box{background:linear-gradient(135deg,rgba(109,202,138,.08),rgba(109,202,138,.02));border:1px solid rgba(109,202,138,.2);border-radius:14px;padding:18px;text-align:center;margin-bottom:12px}
+.margem-box.neg{background:linear-gradient(135deg,rgba(224,82,82,.08),rgba(224,82,82,.02));border-color:rgba(224,82,82,.2)}
+.margem-lbl{font-size:.7em;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.margem-val{font-size:1.75em;font-weight:800;color:#6dca8a}
+.margem-box.neg .margem-val{color:#e05252}
+.margem-pct{font-size:.78em;color:#4a8a5a;font-weight:600;margin-top:3px}
+.margem-box.neg .margem-pct{color:#8a4a4a}
+.tip-box{margin-top:10px;padding:10px 13px;background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.14);border-radius:10px;font-size:.73em;color:#888;line-height:1.55}
+.analise-empty{text-align:center;padding:40px 14px;color:#555}
+.analise-empty .ae-icon{font-size:3em;margin-bottom:12px}
+.analise-empty p{font-size:.8em;line-height:1.65}
+.modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.78);backdrop-filter:blur(5px);display:none;align-items:flex-end;justify-content:center;z-index:1000;opacity:0;transition:opacity .3s}
+.modal-overlay.active{display:flex;opacity:1}
+@media(min-width:520px){.modal-overlay{align-items:center}}
+.modal-content{background:linear-gradient(160deg,rgba(22,23,30,.99),rgba(15,16,22,.99));width:100%;max-width:480px;border-radius:20px 20px 0 0;border:1px solid rgba(212,175,55,.15);border-bottom:none;box-shadow:0 -8px 40px rgba(0,0,0,.6);padding:22px;max-height:90dvh;overflow-y:auto;transform:translateY(20px);transition:transform .3s;padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+@media(min-width:520px){.modal-content{border-radius:20px;border-bottom:1px solid rgba(212,175,55,.15);max-width:420px;padding-bottom:22px;transform:translateY(30px)}}
+.modal-overlay.active .modal-content{transform:translateY(0)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:11px;border-bottom:1px solid rgba(212,175,55,.1)}
+.modal-header h2{font-size:1em;color:#d4af37;font-weight:700}
+.close-modal{background:rgba(255,255,255,.06);border:none;color:#888;font-size:1.1em;cursor:pointer;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.close-modal:hover{background:rgba(255,255,255,.12);color:#fff}
+.config-section{margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05)}
+.config-section-title{font-size:.78em;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-weight:600}
+.modal-footer{display:flex;gap:9px;margin-top:18px}
+.btn-modal{flex:1;padding:10px;border-radius:9px;font-weight:700;font-size:.82em;cursor:pointer;border:none;text-transform:uppercase;letter-spacing:.5px;transition:all .2s;font-family:'Inter',Arial,sans-serif}
+.btn-save{background:#d4af37;color:#000}
+.btn-save:hover{background:#e0be4a}
+.btn-cancel{background:rgba(255,255,255,.05);color:#aaa;border:1px solid rgba(255,255,255,.1)}
+.btn-cancel:hover{background:rgba(255,255,255,.1);color:#fff}
+.btn-delete{background:rgba(200,60,60,.15);color:#e05252;border:1px solid rgba(200,60,60,.3)}
+.btn-delete:hover{background:rgba(200,60,60,.25)}
+.emoji-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.emoji-opt{width:34px;height:34px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.15em;transition:all .15s}
+.emoji-opt.sel{background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.4)}
+.emoji-opt:hover{background:rgba(255,255,255,.09)}
+.troca-hist-item{display:flex;justify-content:space-between;padding:6px 0;font-size:.78em;border-bottom:1px solid rgba(255,255,255,.05)}
+.troca-hist-item:last-child{border-bottom:none}
+.th-date{color:#888}.th-km{color:#bbb;font-weight:600}.th-custo{color:#d4af37;font-weight:600}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
 </head>
 <body>
-    <div class="card">
-        <button class="settings-btn" onclick="abrirConfiguracoes()" title="Configurações">⚙️</button>
-        <!-- Header -->
-        <div class="header">
-            <img src="logo.png" alt="GA Entregas Express" class="logo" onerror="this.style.display='none'">
-            <h1>GA ENTREGAS EXPRESS</h1>
-            <p class="subtitle">Calculadora Automática Gratuita</p>
-        </div>
-
-        <!-- Distância -->
-        <div class="form-group">
-            <label class="field-label" for="distancia">📏 Distância (km)</label>
-            <input type="number" id="distancia" min="0" step="0.1" placeholder="Ex: 12.5" inputmode="decimal">
-            <div class="hint">
-                Veja a distância no <a href="https://www.google.com.br/maps/dir/" target="_blank" rel="noopener">Google Maps</a> e digite aqui
-            </div>
-        </div>
-
-        <!-- Serviço -->
-        <div class="form-group">
-            <label class="field-label" for="servico">🔧 Tipo de Serviço</label>
-            <select id="servico">
-                <option value="agendada">Agendada (Rota Comercial) — até 40 km</option>
-                <option value="avulsa">Avulsa / Emergência</option>
-                <option value="intermunicipal">Intermunicipal (acima de 40 km)</option>
-            </select>
-        </div>
-
-        <!-- Adicionais -->
+<div class="app-wrapper">
+  <div class="card">
+    <div class="app-header">
+      <img src="logo.png" alt="GA" class="header-logo" onerror="this.style.display='none'">
+      <div class="header-title"><h1>GA ENTREGAS EXPRESS</h1><p>Sistema Completo para Motoboy</p></div>
+      <button class="settings-btn" onclick="abrirConfiguracoes()" title="Configuracoes">&#9881;</button>
+    </div>
+    <div class="tab-panels">
+      <!-- CALCULADORA -->
+      <div class="tab-panel active" id="panel-calculadora">
+        <div class="form-group"><label class="field-label" for="distancia">&#128207; Distancia (km)</label><input type="number" id="distancia" min="0" step="0.1" placeholder="Ex: 12.5" inputmode="decimal"><div class="hint">Veja no <a href="https://www.google.com.br/maps/dir/" target="_blank" rel="noopener">Google Maps</a> e digite aqui</div></div>
+        <div class="form-group"><label class="field-label" for="servico">&#128295; Tipo de Servico</label><select id="servico"><option value="agendada">Agendada (Rota Comercial) ate 40 km</option><option value="avulsa">Avulsa / Emergencia</option><option value="intermunicipal">Intermunicipal (acima de 40 km)</option></select></div>
         <div class="section-label">Adicionais</div>
         <div class="checkbox-group">
-            <label class="option-card" id="cardRetorno" for="retorno">
-                <input type="checkbox" id="retorno" onchange="atualizarCard('retorno','cardRetorno')">
-                <span class="option-text">
-                    <span class="option-title">Retorno</span>
-                    <span class="option-desc">Bate e volta · +60%</span>
-                </span>
-            </label>
-            <label class="option-card" id="cardCondominio" for="condominio">
-                <input type="checkbox" id="condominio" onchange="atualizarCard('condominio','cardCondominio')">
-                <span class="option-text">
-                    <span class="option-title">Condomínio</span>
-                    <span class="option-desc">Horizontal · +R$ 5,00</span>
-                </span>
-            </label>
+          <label class="option-card" id="cardRetorno" for="retorno"><input type="checkbox" id="retorno" onchange="atualizarCard('retorno','cardRetorno')"><span class="option-text"><span class="option-title">Retorno</span><span class="option-desc">Bate e volta +60%</span></span></label>
+          <label class="option-card" id="cardCondominio" for="condominio"><input type="checkbox" id="condominio" onchange="atualizarCard('condominio','cardCondominio')"><span class="option-text"><span class="option-title">Condominio</span><span class="option-desc">Horizontal +R$ 5,00</span></span></label>
         </div>
-
-        <!-- Valor NF e Espera -->
         <div class="row-two">
-            <div class="form-group">
-                <label class="field-label" for="valorNf">💰 Valor NF (R$)</label>
-                <input type="text" inputmode="decimal" id="valorNf" placeholder="Ex: 600,00">
-            </div>
-            <div class="form-group">
-                <label class="field-label" for="tempoEspera">⏱️ Espera Extra (min)</label>
-                <input type="number" id="tempoEspera" min="0" placeholder="Além de 10 min" inputmode="numeric">
-            </div>
+          <div class="form-group"><label class="field-label" for="valorNf">&#128176; Valor NF (R$)</label><input type="text" inputmode="decimal" id="valorNf" placeholder="Ex: 600,00"></div>
+          <div class="form-group"><label class="field-label" for="tempoEspera">&#9201;&#65039; Espera Extra (min)</label><input type="number" id="tempoEspera" min="0" placeholder="Alem de 10 min" inputmode="numeric"></div>
         </div>
-
-        <!-- Botão -->
-        <button class="btn-calcular" id="btnCalcular" onclick="calcularCorrida()">
-            CALCULAR VALOR
-        </button>
-
-        <!-- Aviso -->
+        <button class="btn-calcular" id="btnCalcular" onclick="calcularCorrida()">CALCULAR VALOR</button>
         <div class="warning" id="avisoServico"></div>
-
-        <!-- Resultado -->
-        <div class="result" id="painelResultado" style="display:none;">
-            <div class="result-distance" id="distanciaUsada">📏 0 km</div>
-            <div class="result-label">Valor Total Previsto</div>
-            <div class="result-total" id="valorTotal">R$ 0,00</div>
-            <div class="breakdown">
-                <div class="breakdown-title">Detalhamento</div>
-                <div id="detalhamento"></div>
-            </div>
-            <button class="btn-add-list" onclick="adicionarEntregaAtual()">➕ ADICIONAR À LISTA</button>
+        <div class="result" id="painelResultado" style="display:none">
+          <div class="result-distance" id="distanciaUsada">0 km</div>
+          <div class="result-label">Valor Total Previsto</div>
+          <div class="result-total" id="valorTotal">R$ 0,00</div>
+          <div class="breakdown"><div class="breakdown-title">Detalhamento</div><div id="detalhamento"></div></div>
+          <button class="btn-add-list" onclick="adicionarEntregaAtual()">+ ADICIONAR A LISTA</button>
         </div>
-
-        <!-- Lista de Entregas -->
         <div class="delivery-list-section" id="secaoListaEntregas">
-            <div class="delivery-list-title">
-                <span>📦 Múltiplas Entregas</span>
-                <button class="btn-clear-list" onclick="limparLista()">Limpar</button>
-            </div>
-            <div id="containerListaEntregas">
-                <!-- Itens da lista -->
-            </div>
-            <div class="delivery-list-total">
-                <span class="total-list-label">Total Final</span>
-                <span class="total-list-value" id="valorTotalLista">R$ 0,00</span>
-            </div>
+          <div class="delivery-list-title"><span>&#128230; Multiplas Entregas</span><button class="btn-clear-list" onclick="limparLista()">Limpar</button></div>
+          <div id="containerListaEntregas"></div>
+          <div class="delivery-list-total"><span class="total-list-label">Total Final</span><span class="total-list-value" id="valorTotalLista">R$ 0,00</span></div>
         </div>
-
-        <!-- Install PWA Banner -->
-        <div class="install-banner" id="installBanner">
-            <p>📲 Instale o app na tela inicial do seu celular!</p>
-            <button class="install-btn" id="installBtn" onclick="instalarApp()">Instalar App</button>
+        <div class="install-banner" id="installBanner"><p>&#128242; Instale o app na tela inicial do seu celular!</p><button class="install-btn" onclick="instalarApp()">Instalar App</button></div>
+        <div class="footer">Valores estimados - GA Entregas Express 2026</div>
+      </div>
+      <!-- DIARIO -->
+      <div class="tab-panel" id="panel-diario">
+        <div class="diario-summary">
+          <div class="summary-card"><div class="s-icon">&#128661;</div><div class="s-val" id="sum-km">0</div><div class="s-lbl">km (30d)</div></div>
+          <div class="summary-card"><div class="s-icon">&#128176;</div><div class="s-val" id="sum-ganho">R$0</div><div class="s-lbl">Ganhos (30d)</div></div>
+          <div class="summary-card"><div class="s-icon">&#9981;&#65039;</div><div class="s-val" id="sum-gas">R$0</div><div class="s-lbl">Gasolina (30d)</div></div>
         </div>
-
-        <div class="footer">
-            Valores estimados · GA Entregas Express © 2026
+        <div class="diario-form">
+          <div class="diario-form-title">&#128197; Registrar Dia</div>
+          <div class="form-group"><label class="field-label" for="d-data">Data</label><input type="date" id="d-data"></div>
+          <div class="row-two">
+            <div class="form-group"><label class="field-label" for="d-km">KM Rodados</label><input type="number" id="d-km" min="0" step="0.1" placeholder="Ex: 85" inputmode="decimal"></div>
+            <div class="form-group"><label class="field-label" for="d-ganho">Ganhos (R$)</label><input type="text" id="d-ganho" placeholder="Ex: 230,00" inputmode="decimal"></div>
+          </div>
+          <div class="row-two">
+            <div class="form-group"><label class="field-label" for="d-litros">Litros Gasolina</label><input type="number" id="d-litros" min="0" step="0.01" placeholder="Ex: 3.5" inputmode="decimal"></div>
+            <div class="form-group"><label class="field-label" for="d-gas">Gasto Gasolina (R$)</label><input type="text" id="d-gas" placeholder="Ex: 22,00" inputmode="decimal"></div>
+          </div>
+          <button class="btn-primary" onclick="registrarDia()">&#128190; SALVAR DIA</button>
         </div>
+        <div class="section-header"><span class="section-title">&#128203; Historico</span><span class="section-count" id="diario-count">0 registros</span></div>
+        <div id="diarioHistorico"><div class="empty-state"><div class="empty-icon">&#128197;</div><p>Nenhum dia registrado ainda.<br>Comece registrando o dia de hoje!</p></div></div>
+      </div>
+      <!-- MANUTENCAO -->
+      <div class="tab-panel" id="panel-manutencao">
+        <div class="odometro-box">
+          <div class="odo-icon">&#128661;</div>
+          <div class="odo-info"><div class="odo-label">Odometro Atual</div><div class="odo-valor" id="odo-display">0 <small>km</small></div></div>
+          <button class="btn-odo" onclick="abrirModalOdo()">&#9999;&#65039; Atualizar</button>
+        </div>
+        <div class="section-header"><span class="section-title">&#9881;&#65039; Componentes da Moto</span><span class="section-count" id="alerta-count"></span></div>
+        <div id="componentesContainer"></div>
+        <button class="btn-add" onclick="abrirModalComp(null)" style="margin-top:2px;margin-bottom:4px">+ Adicionar Componente para Rastrear</button>
+        <div class="divider"></div>
+        <div class="section-header"><span class="section-title">&#128179; Outros Custos</span></div>
+        <div id="custosContainer"></div>
+        <button class="btn-add" onclick="abrirModalCusto(null)" style="margin-top:4px">+ Adicionar Custo (IPVA, Seguro, etc.)</button>
+        <div style="height:16px"></div>
+      </div>
+      <!-- ANALISE -->
+      <div class="tab-panel" id="panel-analise">
+        <div class="periodo-filter">
+          <button class="periodo-btn" id="p7" onclick="setPeriodo(7)">7d</button>
+          <button class="periodo-btn active" id="p30" onclick="setPeriodo(30)">30d</button>
+          <button class="periodo-btn" id="p90" onclick="setPeriodo(90)">90d</button>
+          <button class="periodo-btn" id="p0" onclick="setPeriodo(0)">Tudo</button>
+        </div>
+        <div id="analise-content"></div>
+      </div>
     </div>
-
-    <!-- Modal de Configurações -->
-    <div class="modal-overlay" id="configModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Configurações</h2>
-                <button class="close-modal" onclick="fecharConfiguracoes()">&times;</button>
-            </div>
-            
-            <div class="config-section">
-                <div class="config-section-title">Serviço Agendado (R$)</div>
-                <div class="row-two">
-                    <div class="form-group">
-                        <label class="field-label">Até 5 km</label>
-                        <input type="number" id="cfg_agendada_5" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Até 10 km</label>
-                        <input type="number" id="cfg_agendada_10" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Até 15 km</label>
-                        <input type="number" id="cfg_agendada_15" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Até 20 km</label>
-                        <input type="number" id="cfg_agendada_20" step="0.5">
-                    </div>
-                </div>
-                <div class="row-two">
-                    <div class="form-group">
-                        <label class="field-label">Acima 20 km (por km)</label>
-                        <input type="number" id="cfg_agendada_km" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Acima 40 km (por km)</label>
-                        <input type="number" id="cfg_agendada_40_km" step="0.1">
-                    </div>
-                </div>
-            </div>
-
-            <div class="config-section">
-                <div class="config-section-title">Serviço Avulso</div>
-                <div class="row-two">
-                    <div class="form-group">
-                        <label class="field-label">Taxa Fixa (R$)</label>
-                        <input type="number" id="cfg_avulsa_fixa" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Por km (R$)</label>
-                        <input type="number" id="cfg_avulsa_km" step="0.1">
-                    </div>
-                </div>
-            </div>
-
-            <div class="config-section">
-                <div class="config-section-title">Intermunicipal</div>
-                <div class="form-group">
-                    <label class="field-label">Por km (R$)</label>
-                    <input type="number" id="cfg_inter_km" step="0.1">
-                </div>
-            </div>
-
-            <div class="config-section">
-                <div class="config-section-title">Adicionais</div>
-                <div class="row-two">
-                    <div class="form-group">
-                        <label class="field-label">Retorno (%)</label>
-                        <input type="number" id="cfg_retorno_pct" step="1">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Condomínio (R$)</label>
-                        <input type="number" id="cfg_condominio" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Risco NF > 500 (%)</label>
-                        <input type="number" id="cfg_risco_pct" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label class="field-label">Espera (R$/min)</label>
-                        <input type="number" id="cfg_espera_min" step="0.1">
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn-modal btn-reset" onclick="restaurarPadroes()">Padrões</button>
-                <button class="btn-modal btn-save" onclick="salvarConfiguracoes()">Salvar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ─── Service Worker Registration ────────────────────────────────
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then((reg) => console.log('SW registrado:', reg.scope))
-                    .catch((err) => console.log('Falha SW:', err));
-            });
-        }
-
-        // ─── PWA Install Prompt ─────────────────────────────────────────
-        let deferredPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBanner').style.display = 'block';
-        });
-
-        function instalarApp() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') {
-                    document.getElementById('installBanner').style.display = 'none';
-                }
-                deferredPrompt = null;
-            });
-        }
-
-        window.addEventListener('appinstalled', () => {
-            document.getElementById('installBanner').style.display = 'none';
-            deferredPrompt = null;
-        });
-
-        // ─── Utilities ──────────────────────────────────────────────────
-
-        // ─── Configurações ──────────────────────────────────────────────
-        const defaultConfig = {
-            agendada: { km5: 20.00, km10: 25.00, km15: 35.00, km20: 50.00, kmMais20: 3.00, kmMais40: 4.00 },
-            avulsa: { fixa: 7.00, porKm: 3.50 },
-            intermunicipal: { porKm: 4.00 },
-            adicionais: { retornoPct: 60, condominio: 5.00, riscoPct: 5, esperaMin: 0.70 }
-        };
-
-        let appConfig = { ...defaultConfig };
-
-        function carregarConfiguracoes() {
-            const salva = localStorage.getItem('ga_entregas_config');
-            if (salva) {
-                try {
-                    const parsed = JSON.parse(salva);
-                    // Faz o merge com o default para garantir que nenhuma chave fique faltando
-                    appConfig = { 
-                        agendada: { ...defaultConfig.agendada, ...parsed.agendada },
-                        avulsa: { ...defaultConfig.avulsa, ...parsed.avulsa },
-                        intermunicipal: { ...defaultConfig.intermunicipal, ...parsed.intermunicipal },
-                        adicionais: { ...defaultConfig.adicionais, ...parsed.adicionais }
-                    };
-                } catch (e) {
-                    console.error('Erro ao ler configs', e);
-                    appConfig = { ...defaultConfig };
-                }
-            }
-            atualizarLabelsConfig();
-        }
-
-        function atualizarInputsConfig() {
-            document.getElementById('cfg_agendada_5').value = appConfig.agendada.km5;
-            document.getElementById('cfg_agendada_10').value = appConfig.agendada.km10;
-            document.getElementById('cfg_agendada_15').value = appConfig.agendada.km15;
-            document.getElementById('cfg_agendada_20').value = appConfig.agendada.km20;
-            document.getElementById('cfg_agendada_km').value = appConfig.agendada.kmMais20;
-            document.getElementById('cfg_agendada_40_km').value = appConfig.agendada.kmMais40;
-            
-            document.getElementById('cfg_avulsa_fixa').value = appConfig.avulsa.fixa;
-            document.getElementById('cfg_avulsa_km').value = appConfig.avulsa.porKm;
-            
-            document.getElementById('cfg_inter_km').value = appConfig.intermunicipal.porKm;
-            
-            document.getElementById('cfg_retorno_pct').value = appConfig.adicionais.retornoPct;
-            document.getElementById('cfg_condominio').value = appConfig.adicionais.condominio;
-            document.getElementById('cfg_risco_pct').value = appConfig.adicionais.riscoPct;
-            document.getElementById('cfg_espera_min').value = appConfig.adicionais.esperaMin;
-        }
-
-        function atualizarLabelsConfig() {
-            document.querySelector('#cardRetorno .option-desc').textContent = `Bate e volta · +${appConfig.adicionais.retornoPct}%`;
-            document.querySelector('#cardCondominio .option-desc').textContent = `Horizontal · +R$ ${appConfig.adicionais.condominio.toFixed(2).replace('.',',')}`;
-        }
-
-        function salvarConfiguracoes() {
-            appConfig.agendada.km5 = parseFloat(document.getElementById('cfg_agendada_5').value) || 0;
-            appConfig.agendada.km10 = parseFloat(document.getElementById('cfg_agendada_10').value) || 0;
-            appConfig.agendada.km15 = parseFloat(document.getElementById('cfg_agendada_15').value) || 0;
-            appConfig.agendada.km20 = parseFloat(document.getElementById('cfg_agendada_20').value) || 0;
-            appConfig.agendada.kmMais20 = parseFloat(document.getElementById('cfg_agendada_km').value) || 0;
-            appConfig.agendada.kmMais40 = parseFloat(document.getElementById('cfg_agendada_40_km').value) || 0;
-            
-            appConfig.avulsa.fixa = parseFloat(document.getElementById('cfg_avulsa_fixa').value) || 0;
-            appConfig.avulsa.porKm = parseFloat(document.getElementById('cfg_avulsa_km').value) || 0;
-            
-            appConfig.intermunicipal.porKm = parseFloat(document.getElementById('cfg_inter_km').value) || 0;
-            
-            appConfig.adicionais.retornoPct = parseFloat(document.getElementById('cfg_retorno_pct').value) || 0;
-            appConfig.adicionais.condominio = parseFloat(document.getElementById('cfg_condominio').value) || 0;
-            appConfig.adicionais.riscoPct = parseFloat(document.getElementById('cfg_risco_pct').value) || 0;
-            appConfig.adicionais.esperaMin = parseFloat(document.getElementById('cfg_espera_min').value) || 0;
-
-            localStorage.setItem('ga_entregas_config', JSON.stringify(appConfig));
-            atualizarLabelsConfig();
-            fecharConfiguracoes();
-            
-            // Recalcula se o painel de resultado estiver aberto
-            if (document.getElementById('painelResultado').style.display === 'block') {
-                calcularCorrida();
-            }
-        }
-
-        function restaurarPadroes() {
-            if(confirm('Restaurar valores originais?')) {
-                appConfig = JSON.parse(JSON.stringify(defaultConfig));
-                atualizarInputsConfig();
-            }
-        }
-
-        function abrirConfiguracoes() {
-            atualizarInputsConfig();
-            document.getElementById('configModal').classList.add('active');
-        }
-
-        function fecharConfiguracoes() {
-            document.getElementById('configModal').classList.remove('active');
-        }
-        
-        // Fechar modal clicando fora
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('configModal');
-            if (e.target === modal) {
-                fecharConfiguracoes();
-            }
-        });
-
-        // Inicializar
-        window.addEventListener('DOMContentLoaded', carregarConfiguracoes);
-
-        // ─── Lista de Entregas ──────────────────────────────────────────
-        let listaEntregas = [];
-        let ultimaEntregaCalculada = null;
-
-        function adicionarEntregaAtual() {
-            if (!ultimaEntregaCalculada) return;
-            
-            listaEntregas.push(ultimaEntregaCalculada);
-            renderizarLista();
-            
-            // Ocultar painel de resultado e limpar distância para próxima
-            document.getElementById('painelResultado').style.display = 'none';
-            document.getElementById('distancia').value = '';
-            document.getElementById('distancia').focus();
-            ultimaEntregaCalculada = null;
-        }
-
-        function removerEntrega(index) {
-            listaEntregas.splice(index, 1);
-            renderizarLista();
-        }
-
-        function limparLista() {
-            if (listaEntregas.length > 0 && confirm('Limpar todas as entregas da lista?')) {
-                listaEntregas = [];
-                renderizarLista();
-            }
-        }
-
-        function renderizarLista() {
-            const secao = document.getElementById('secaoListaEntregas');
-            const container = document.getElementById('containerListaEntregas');
-            const totalEl = document.getElementById('valorTotalLista');
-            
-            if (listaEntregas.length === 0) {
-                secao.style.display = 'none';
-                return;
-            }
-            
-            secao.style.display = 'block';
-            let html = '';
-            let somaTotal = 0;
-            
-            listaEntregas.forEach((entrega, index) => {
-                somaTotal += entrega.total;
-                html += `
-                <div class="delivery-item">
-                    <div class="delivery-info">
-                        <span class="delivery-name">Entrega ${index + 1}</span>
-                        <span class="delivery-desc">${entrega.km.toFixed(1)} km · ${entrega.servicoNome}</span>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span class="delivery-price">${formatarReais(entrega.total)}</span>
-                        <button class="btn-remove" onclick="removerEntrega(${index})" title="Remover entrega">🗑️</button>
-                    </div>
-                </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-            totalEl.innerText = formatarReais(somaTotal);
-        }
-
-        /**
-         * Converte "600,50" ou "600.50" em número.
-         * Aceita formato BR (vírgula) e internacional (ponto).
-         */
-        function parseValorBR(str) {
-            if (!str) return 0;
-            const limpo = str.trim().replace(/\./g, '').replace(',', '.');
-            const n = parseFloat(limpo);
-            return isNaN(n) || n < 0 ? 0 : n;
-        }
-
-        function formatarReais(valor) {
-            return 'R$ ' + valor.toFixed(2).replace('.', ',');
-        }
-
-        function atualizarCard(inputId, cardId) {
-            const marcado = document.getElementById(inputId).checked;
-            document.getElementById(cardId).classList.toggle('checked', marcado);
-        }
-
-        function mostrarAviso(msg) {
-            const aviso = document.getElementById('avisoServico');
-            if (msg) {
-                aviso.textContent = msg;
-                aviso.style.display = 'block';
-            } else {
-                aviso.style.display = 'none';
-            }
-        }
-
-        function nomeServico(servico) {
-            const nomes = {
-                'agendada': 'Agendada',
-                'avulsa': 'Avulsa / Emergência',
-                'intermunicipal': 'Intermunicipal'
-            };
-            return nomes[servico] || servico;
-        }
-
-        // ─── Cálculo Principal ──────────────────────────────────────────
-
-        function calcularCorrida() {
-            mostrarAviso(null);
-            document.getElementById('painelResultado').style.display = 'none';
-
-            const km = parseFloat(document.getElementById('distancia').value);
-            if (isNaN(km) || km <= 0) {
-                mostrarAviso('Por favor, digite uma distância válida em km!');
-                document.getElementById('avisoServico').style.display = 'block';
-                document.getElementById('distancia').focus();
-                return;
-            }
-
-            const servico = document.getElementById('servico').value;
-            const retorno = document.getElementById('retorno').checked;
-            const condominio = document.getElementById('condominio').checked;
-            const valorNf = parseValorBR(document.getElementById('valorNf').value);
-            const tempoEspera = Math.max(0, parseInt(document.getElementById('tempoEspera').value) || 0);
-
-            let valorBase = 0;
-            let avisoTexto = null;
-
-            // ── Regras de preço por tipo de serviço ──
-            if (servico === 'agendada') {
-                if (km > 40) {
-                    avisoTexto = `${km.toFixed(1)} km está fora da faixa de "Agendada" (até 40 km). Calculando como Intermunicipal (R$ ${appConfig.agendada.kmMais40.toFixed(2).replace('.',',')}/km).`;
-                    valorBase = km * appConfig.agendada.kmMais40;
-                } else if (km <= 5) valorBase = appConfig.agendada.km5;
-                else if (km <= 10) valorBase = appConfig.agendada.km10;
-                else if (km <= 15) valorBase = appConfig.agendada.km15;
-                else if (km <= 20) valorBase = appConfig.agendada.km20;
-                else valorBase = km * appConfig.agendada.kmMais20;
-            } else if (servico === 'avulsa') {
-                valorBase = (km * appConfig.avulsa.porKm) + appConfig.avulsa.fixa;
-            } else if (servico === 'intermunicipal') {
-                if (km <= 40) {
-                    avisoTexto = `${km.toFixed(1)} km é menor que 40 km, faixa normalmente coberta por "Agendada" ou "Avulsa". Calculando mesmo assim como Intermunicipal.`;
-                }
-                valorBase = km * appConfig.intermunicipal.porKm;
-            }
-
-            // ── Adicionais ──
-            const adicRetorno = retorno ? (valorBase * (appConfig.adicionais.retornoPct / 100)) : 0;
-            const adicCondo = condominio ? appConfig.adicionais.condominio : 0;
-            const taxaRisco = (valorNf > 500) ? (valorNf * (appConfig.adicionais.riscoPct / 100)) : 0;
-            const taxaEspera = tempoEspera * appConfig.adicionais.esperaMin;
-
-            // ── Total ──
-            const total = valorBase + adicRetorno + adicCondo + taxaRisco + taxaEspera;
-            
-            // ── Guardar última entrega calculada ──
-            ultimaEntregaCalculada = {
-                km: km,
-                servicoNome: nomeServico(servico),
-                total: total
-            };
-
-            // ── Exibir aviso se necessário ──
-            if (avisoTexto) mostrarAviso(avisoTexto);
-
-            // ── Atualizar resultado ──
-            document.getElementById('distanciaUsada').innerHTML = `📏 ${km.toFixed(1)} km`;
-            document.getElementById('valorTotal').innerText = formatarReais(total);
-
-            // ── Breakdown detalhado ──
-            let html = '';
-            html += montarLinha(`Valor base (${nomeServico(servico)})`, valorBase);
-            if (adicRetorno > 0) html += montarLinha(`Retorno / Bate e volta (+${appConfig.adicionais.retornoPct}%)`, adicRetorno);
-            if (adicCondo > 0) html += montarLinha('Condomínio horizontal', adicCondo);
-            if (taxaRisco > 0) html += montarLinha(`Taxa de risco (${appConfig.adicionais.riscoPct}% da NF)`, taxaRisco);
-            if (taxaEspera > 0) html += montarLinha(`Espera excedente (${tempoEspera} min × R$${appConfig.adicionais.esperaMin.toFixed(2).replace('.',',')})`, taxaEspera);
-            html += `<div class="breakdown-row total-row">
-                        <span class="lbl">Total</span>
-                        <span class="val">${formatarReais(total)}</span>
-                     </div>`;
-
-            document.getElementById('detalhamento').innerHTML = html;
-            document.getElementById('painelResultado').style.display = 'block';
-
-            // Scroll suave
-            document.getElementById('painelResultado').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function montarLinha(label, valor) {
-            return `<div class="breakdown-row">
-                        <span class="lbl">${label}</span>
-                        <span class="val">${formatarReais(valor)}</span>
-                    </div>`;
-        }
-
-        // ── Atalhos de teclado ──
-        document.getElementById('distancia').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') calcularCorrida();
-        });
-    </script>
+    <nav class="bottom-nav">
+      <button class="nav-btn active" id="nav-calculadora" onclick="switchTab('calculadora')"><span class="nav-icon">&#129518;</span><span class="nav-lbl">Calcular</span></button>
+      <button class="nav-btn" id="nav-diario" onclick="switchTab('diario')"><span class="nav-icon">&#128197;</span><span class="nav-lbl">Diario</span></button>
+      <button class="nav-btn" id="nav-manutencao" onclick="switchTab('manutencao')"><span class="nav-icon">&#128295;</span><span class="nav-lbl">Manutencao</span><span class="nav-badge" id="badge-manut"></span></button>
+      <button class="nav-btn" id="nav-analise" onclick="switchTab('analise')"><span class="nav-icon">&#128202;</span><span class="nav-lbl">Analise</span></button>
+    </nav>
+  </div>
+</div>
+<!-- Modal Configuracoes -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal-content">
+    <div class="modal-header"><h2>&#9881;&#65039; Configuracoes de Precos</h2><button class="close-modal" onclick="fecharModal('configModal')">&#10005;</button></div>
+    <div class="config-section"><div class="config-section-title">Servico Agendado (R$)</div><div class="row-two"><div class="form-group"><label class="field-label">Ate 5 km</label><input type="number" id="cfg_agendada_5" step="0.5"></div><div class="form-group"><label class="field-label">Ate 10 km</label><input type="number" id="cfg_agendada_10" step="0.5"></div><div class="form-group"><label class="field-label">Ate 15 km</label><input type="number" id="cfg_agendada_15" step="0.5"></div><div class="form-group"><label class="field-label">Ate 20 km</label><input type="number" id="cfg_agendada_20" step="0.5"></div></div><div class="row-two"><div class="form-group"><label class="field-label">Acima 20 km (por km)</label><input type="number" id="cfg_agendada_km" step="0.1"></div><div class="form-group"><label class="field-label">Acima 40 km (por km)</label><input type="number" id="cfg_agendada_40_km" step="0.1"></div></div></div>
+    <div class="config-section"><div class="config-section-title">Servico Avulso</div><div class="row-two"><div class="form-group"><label class="field-label">Taxa Fixa (R$)</label><input type="number" id="cfg_avulsa_fixa" step="0.5"></div><div class="form-group"><label class="field-label">Por km (R$)</label><input type="number" id="cfg_avulsa_km" step="0.1"></div></div></div>
+    <div class="config-section"><div class="config-section-title">Intermunicipal</div><div class="form-group"><label class="field-label">Por km (R$)</label><input type="number" id="cfg_inter_km" step="0.1"></div></div>
+    <div class="config-section" style="border:none;margin-bottom:0;padding-bottom:0"><div class="config-section-title">Adicionais</div><div class="row-two"><div class="form-group"><label class="field-label">Retorno (%)</label><input type="number" id="cfg_retorno_pct" step="1"></div><div class="form-group"><label class="field-label">Condominio (R$)</label><input type="number" id="cfg_condominio" step="0.5"></div><div class="form-group"><label class="field-label">Risco NF &gt; 500 (%)</label><input type="number" id="cfg_risco_pct" step="0.1"></div><div class="form-group"><label class="field-label">Espera (R$/min)</label><input type="number" id="cfg_espera_min" step="0.1"></div></div></div>
+    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="restaurarPadroes()">Padroes</button><button class="btn-modal btn-save" onclick="salvarConfiguracoes()">Salvar</button></div>
+  </div>
+</div>
+<!-- Modal Odometro -->
+<div class="modal-overlay" id="odoModal">
+  <div class="modal-content">
+    <div class="modal-header"><h2>&#128661; Atualizar Odometro</h2><button class="close-modal" onclick="fecharModal('odoModal')">&#10005;</button></div>
+    <div class="form-group"><label class="field-label">KM Atual da Moto</label><input type="number" id="odo-input" min="0" step="1" placeholder="Ex: 15340" inputmode="numeric"></div>
+    <p style="font-size:.73em;color:#666;margin-bottom:14px;line-height:1.55">O odometro e usado para calcular o desgaste de cada componente automaticamente.</p>
+    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="fecharModal('odoModal')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarOdo()">Salvar</button></div>
+  </div>
+</div>
+<!-- Modal Registrar Troca -->
+<div class="modal-overlay" id="trocaModal">
+  <div class="modal-content">
+    <div class="modal-header"><h2 id="troca-title">&#128295; Registrar Troca</h2><button class="close-modal" onclick="fecharModal('trocaModal')">&#10005;</button></div>
+    <input type="hidden" id="troca-comp-id">
+    <div class="form-group"><label class="field-label">KM no Momento da Troca</label><input type="number" id="troca-km" min="0" step="1" placeholder="Ex: 15340" inputmode="numeric"></div>
+    <div class="row-two"><div class="form-group"><label class="field-label">Data da Troca</label><input type="date" id="troca-data"></div><div class="form-group"><label class="field-label">Custo (R$)</label><input type="text" id="troca-custo" placeholder="Ex: 80,00" inputmode="decimal"></div></div>
+    <div class="form-group"><label class="field-label">Observacao (opcional)</label><input type="text" id="troca-obs" placeholder="Ex: Oficina do Joao"></div>
+    <div id="troca-hist-section" style="display:none;margin-top:14px"><div class="analise-box-title">Historico de Trocas</div><div id="troca-hist-list"></div></div>
+    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="fecharModal('trocaModal')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarTroca()">Registrar</button></div>
+  </div>
+</div>
+<!-- Modal Componente -->
+<div class="modal-overlay" id="compModal">
+  <div class="modal-content">
+    <div class="modal-header"><h2 id="comp-modal-title">&#9881;&#65039; Novo Componente</h2><button class="close-modal" onclick="fecharModal('compModal')">&#10005;</button></div>
+    <input type="hidden" id="comp-edit-id">
+    <div class="form-group"><label class="field-label">Nome do Componente</label><input type="text" id="comp-nome" placeholder="Ex: Corrente, Relacao, Bateria..."></div>
+    <div class="form-group"><label class="field-label">Icone</label><div class="emoji-grid" id="comp-emoji-grid"></div><input type="hidden" id="comp-icon" value="&#128297;"></div>
+    <div class="row-two"><div class="form-group"><label class="field-label">Durabilidade (km)</label><input type="number" id="comp-duracao" min="0" step="100" placeholder="Ex: 5000" inputmode="numeric"></div><div class="form-group"><label class="field-label">Custo da Troca (R$)</label><input type="text" id="comp-custo" placeholder="Ex: 80,00" inputmode="decimal"></div></div>
+    <div id="comp-modal-footer" class="modal-footer"></div>
+  </div>
+</div>
+<!-- Modal Custo Extra -->
+<div class="modal-overlay" id="custoModal">
+  <div class="modal-content">
+    <div class="modal-header"><h2 id="custo-modal-title">&#128179; Novo Custo</h2><button class="close-modal" onclick="fecharModal('custoModal')">&#10005;</button></div>
+    <input type="hidden" id="custo-edit-id">
+    <div class="form-group"><label class="field-label">Nome</label><input type="text" id="custo-nome" placeholder="Ex: IPVA, Seguro, Aluguel..."></div>
+    <div class="form-group"><label class="field-label">Icone</label><div class="emoji-grid" id="custo-emoji-grid"></div><input type="hidden" id="custo-icon" value="&#128179;"></div>
+    <div class="row-two"><div class="form-group"><label class="field-label">Valor (R$)</label><input type="text" id="custo-valor" placeholder="Ex: 500,00" inputmode="decimal"></div><div class="form-group"><label class="field-label">Frequencia</label><select id="custo-periodo"><option value="mensal">Mensal</option><option value="anual">Anual</option><option value="por_km">Por km rodado</option></select></div></div>
+    <div id="custo-modal-footer" class="modal-footer"></div>
+  </div>
+</div>
+<script>
+'use strict';
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('service-worker.js').then(r=>console.log('SW:',r.scope)).catch(e=>console.log('SW err:',e));});}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').style.display='block';});
+function instalarApp(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(c=>{if(c.outcome==='accepted')document.getElementById('installBanner').style.display='none';deferredPrompt=null;});}
+window.addEventListener('appinstalled',()=>{document.getElementById('installBanner').style.display='none';deferredPrompt=null;});
+const K={cfg:'ga_entregas_config',diario:'ga_diario_v2',comps:'ga_componentes_v2',custos:'ga_custos_extras_v2',odo:'ga_km_atual_v2'};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).substr(2,5);
+function pBR(s){if(!s)return 0;const n=parseFloat(String(s).trim().replace(/\./g,'').replace(',','.'));return isNaN(n)||n<0?0:n;}
+function fR(v){return'R$ '+Number(v).toFixed(2).replace('.',',');}
+function fRc(v){if(v>=1000)return'R$'+(v/1000).toFixed(1)+'k';return'R$'+Number(v).toFixed(0);}
+function fData(s){if(!s)return'';const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
+function fDataCurta(s){if(!s)return'';const dt=new Date(s+'T12:00:00');const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];return dias[dt.getDay()]+' '+s.slice(8,10)+'/'+s.slice(5,7);}
+function hoje(){return new Date().toISOString().slice(0,10);}
+function abrirModal(id){document.getElementById(id).classList.add('active');}
+function fecharModal(id){document.getElementById(id).classList.remove('active');}
+document.addEventListener('click',e=>{document.querySelectorAll('.modal-overlay.active').forEach(o=>{if(e.target===o)o.classList.remove('active');});});
+let activeTab='calculadora';
+function switchTab(tab){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  activeTab=tab;
+  if(tab==='diario')renderDiario();
+  if(tab==='manutencao')renderManutencao();
+  if(tab==='analise')renderAnalise();
+}
+const defaultConfig={agendada:{km5:20,km10:25,km15:35,km20:50,kmMais20:3,kmMais40:4},avulsa:{fixa:7,porKm:3.5},intermunicipal:{porKm:4},adicionais:{retornoPct:60,condominio:5,riscoPct:5,esperaMin:0.7}};
+let appConfig=JSON.parse(JSON.stringify(defaultConfig));
+function carregarConfig(){
+  try{const s=localStorage.getItem(K.cfg);if(s){const p=JSON.parse(s);appConfig={agendada:{...defaultConfig.agendada,...p.agendada},avulsa:{...defaultConfig.avulsa,...p.avulsa},intermunicipal:{...defaultConfig.intermunicipal,...p.intermunicipal},adicionais:{...defaultConfig.adicionais,...p.adicionais}};}}catch(e){appConfig=JSON.parse(JSON.stringify(defaultConfig));}
+  atualizarLabels();
+}
+function atualizarInputsConfig(){
+  document.getElementById('cfg_agendada_5').value=appConfig.agendada.km5;
+  document.getElementById('cfg_agendada_10').value=appConfig.agendada.km10;
+  document.getElementById('cfg_agendada_15').value=appConfig.agendada.km15;
+  document.getElementById('cfg_agendada_20').value=appConfig.agendada.km20;
+  document.getElementById('cfg_agendada_km').value=appConfig.agendada.kmMais20;
+  document.getElementById('cfg_agendada_40_km').value=appConfig.agendada.kmMais40;
+  document.getElementById('cfg_avulsa_fixa').value=appConfig.avulsa.fixa;
+  document.getElementById('cfg_avulsa_km').value=appConfig.avulsa.porKm;
+  document.getElementById('cfg_inter_km').value=appConfig.intermunicipal.porKm;
+  document.getElementById('cfg_retorno_pct').value=appConfig.adicionais.retornoPct;
+  document.getElementById('cfg_condominio').value=appConfig.adicionais.condominio;
+  document.getElementById('cfg_risco_pct').value=appConfig.adicionais.riscoPct;
+  document.getElementById('cfg_espera_min').value=appConfig.adicionais.esperaMin;
+}
+function atualizarLabels(){
+  document.querySelector('#cardRetorno .option-desc').textContent='Bate e volta +'+appConfig.adicionais.retornoPct+'%';
+  document.querySelector('#cardCondominio .option-desc').textContent='Horizontal +R$ '+appConfig.adicionais.condominio.toFixed(2).replace('.',',');
+}
+function salvarConfiguracoes(){
+  appConfig.agendada.km5=parseFloat(document.getElementById('cfg_agendada_5').value)||0;
+  appConfig.agendada.km10=parseFloat(document.getElementById('cfg_agendada_10').value)||0;
+  appConfig.agendada.km15=parseFloat(document.getElementById('cfg_agendada_15').value)||0;
+  appConfig.agendada.km20=parseFloat(document.getElementById('cfg_agendada_20').value)||0;
+  appConfig.agendada.kmMais20=parseFloat(document.getElementById('cfg_agendada_km').value)||0;
+  appConfig.agendada.kmMais40=parseFloat(document.getElementById('cfg_agendada_40_km').value)||0;
+  appConfig.avulsa.fixa=parseFloat(document.getElementById('cfg_avulsa_fixa').value)||0;
+  appConfig.avulsa.porKm=parseFloat(document.getElementById('cfg_avulsa_km').value)||0;
+  appConfig.intermunicipal.porKm=parseFloat(document.getElementById('cfg_inter_km').value)||0;
+  appConfig.adicionais.retornoPct=parseFloat(document.getElementById('cfg_retorno_pct').value)||0;
+  appConfig.adicionais.condominio=parseFloat(document.getElementById('cfg_condominio').value)||0;
+  appConfig.adicionais.riscoPct=parseFloat(document.getElementById('cfg_risco_pct').value)||0;
+  appConfig.adicionais.esperaMin=parseFloat(document.getElementById('cfg_espera_min').value)||0;
+  localStorage.setItem(K.cfg,JSON.stringify(appConfig));
+  atualizarLabels();fecharModal('configModal');
+  if(document.getElementById('painelResultado').style.display==='block')calcularCorrida();
+}
+function restaurarPadroes(){if(confirm('Restaurar valores originais?')){appConfig=JSON.parse(JSON.stringify(defaultConfig));atualizarInputsConfig();}}
+function abrirConfiguracoes(){atualizarInputsConfig();abrirModal('configModal');}
+let listaEntregas=[],ultimaEntregaCalc=null;
+function adicionarEntregaAtual(){if(!ultimaEntregaCalc)return;listaEntregas.push(ultimaEntregaCalc);renderLista();document.getElementById('painelResultado').style.display='none';document.getElementById('distancia').value='';document.getElementById('distancia').focus();ultimaEntregaCalc=null;}
+function removerEntrega(i){listaEntregas.splice(i,1);renderLista();}
+function limparLista(){if(listaEntregas.length>0&&confirm('Limpar todas as entregas?')){listaEntregas=[];renderLista();}}
+function renderLista(){
+  const sec=document.getElementById('secaoListaEntregas'),cont=document.getElementById('containerListaEntregas'),tot=document.getElementById('valorTotalLista');
+  if(!listaEntregas.length){sec.style.display='none';return;}
+  sec.style.display='block';let html='',soma=0;
+  listaEntregas.forEach((e,i)=>{soma+=e.total;html+='<div class="delivery-item"><div class="delivery-info"><span class="delivery-name">Entrega '+(i+1)+'</span><span class="delivery-desc">'+e.km.toFixed(1)+' km - '+e.svc+'</span></div><div style="display:flex;align-items:center;gap:7px"><span class="delivery-price">'+fR(e.total)+'</span><button class="btn-remove" onclick="removerEntrega('+i+')">x</button></div></div>';});
+  cont.innerHTML=html;tot.innerText=fR(soma);
+}
+function atualizarCard(inp,card){document.getElementById(card).classList.toggle('checked',document.getElementById(inp).checked);}
+function mostrarAviso(msg){const a=document.getElementById('avisoServico');if(msg){a.textContent=msg;a.style.display='block';}else a.style.display='none';}
+function nomeServico(s){return{agendada:'Agendada',avulsa:'Avulsa / Emergencia',intermunicipal:'Intermunicipal'}[s]||s;}
+function calcularCorrida(){
+  mostrarAviso(null);document.getElementById('painelResultado').style.display='none';
+  const km=parseFloat(document.getElementById('distancia').value);
+  if(isNaN(km)||km<=0){mostrarAviso('Por favor, digite uma distancia valida em km!');document.getElementById('avisoServico').style.display='block';document.getElementById('distancia').focus();return;}
+  const svc=document.getElementById('servico').value,ret=document.getElementById('retorno').checked,condo=document.getElementById('condominio').checked,nf=pBR(document.getElementById('valorNf').value),esp=Math.max(0,parseInt(document.getElementById('tempoEspera').value)||0);
+  let base=0,aviso=null;
+  if(svc==='agendada'){
+    if(km>40){aviso=km.toFixed(1)+' km fora da faixa Agendada. Calculando como Intermunicipal.';base=km*appConfig.agendada.kmMais40;}
+    else if(km<=5)base=appConfig.agendada.km5;
+    else if(km<=10)base=appConfig.agendada.km10;
+    else if(km<=15)base=appConfig.agendada.km15;
+    else if(km<=20)base=appConfig.agendada.km20;
+    else base=km*appConfig.agendada.kmMais20;
+  }else if(svc==='avulsa'){base=km*appConfig.avulsa.porKm+appConfig.avulsa.fixa;}
+  else{if(km<=40)aviso=km.toFixed(1)+' km abaixo de 40 km. Calculando como Intermunicipal.';base=km*appConfig.intermunicipal.porKm;}
+  const aRet=ret?base*(appConfig.adicionais.retornoPct/100):0,aCondo=condo?appConfig.adicionais.condominio:0,aRisco=nf>500?nf*(appConfig.adicionais.riscoPct/100):0,aEsp=esp*appConfig.adicionais.esperaMin;
+  const total=base+aRet+aCondo+aRisco+aEsp;
+  ultimaEntregaCalc={km,svc:nomeServico(svc),total};
+  if(aviso)mostrarAviso(aviso);
+  document.getElementById('distanciaUsada').innerHTML=km.toFixed(1)+' km';
+  document.getElementById('valorTotal').innerText=fR(total);
+  let html=mL('Valor base ('+nomeServico(svc)+')',base);
+  if(aRet>0)html+=mL('Retorno +'+appConfig.adicionais.retornoPct+'%',aRet);
+  if(aCondo>0)html+=mL('Condominio horizontal',aCondo);
+  if(aRisco>0)html+=mL('Taxa risco ('+appConfig.adicionais.riscoPct+'% NF)',aRisco);
+  if(aEsp>0)html+=mL('Espera '+esp+'min',aEsp);
+  html+='<div class="breakdown-row total-row"><span class="lbl">Total</span><span class="val">'+fR(total)+'</span></div>';
+  document.getElementById('detalhamento').innerHTML=html;
+  document.getElementById('painelResultado').style.display='block';
+  document.getElementById('painelResultado').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function mL(l,v){return'<div class="breakdown-row"><span class="lbl">'+l+'</span><span class="val">'+fR(v)+'</span></div>';}
+document.getElementById('distancia').addEventListener('keydown',e=>{if(e.key==='Enter')calcularCorrida();});
+let diario=[];
+function carregarDiario(){try{diario=JSON.parse(localStorage.getItem(K.diario)||'[]');}catch{diario=[];}}
+function salvarDiario(){localStorage.setItem(K.diario,JSON.stringify(diario));}
+function registrarDia(){
+  const data=document.getElementById('d-data').value;
+  const km=parseFloat(document.getElementById('d-km').value);
+  const ganho=pBR(document.getElementById('d-ganho').value);
+  const litros=parseFloat(document.getElementById('d-litros').value)||0;
+  const gas=pBR(document.getElementById('d-gas').value);
+  if(!data){alert('Selecione a data!');return;}
+  if(isNaN(km)||km<=0){alert('Informe os km rodados!');return;}
+  if(ganho<=0){alert('Informe os ganhos do dia!');return;}
+  const existe=diario.findIndex(r=>r.data===data);
+  const reg={id:uid(),data,km,ganho,litros,gas};
+  if(existe>=0){if(confirm('Ja existe registro para '+fData(data)+'. Substituir?')){diario[existe]={...reg,id:diario[existe].id};}else return;}
+  else diario.unshift(reg);
+  salvarDiario();renderDiario();
+  document.getElementById('d-km').value='';document.getElementById('d-ganho').value='';
+  document.getElementById('d-litros').value='';document.getElementById('d-gas').value='';
+  document.getElementById('d-data').value=hoje();
+}
+function removerDia(id){if(!confirm('Remover este registro?'))return;diario=diario.filter(r=>r.id!==id);salvarDiario();renderDiario();}
+function renderDiario(){
+  const lim=new Date();lim.setDate(lim.getDate()-30);
+  const rec=diario.filter(r=>new Date(r.data+'T12:00:00')>=lim);
+  document.getElementById('sum-km').textContent=rec.reduce((a,r)=>a+r.km,0).toFixed(0);
+  document.getElementById('sum-ganho').textContent=fRc(rec.reduce((a,r)=>a+r.ganho,0));
+  document.getElementById('sum-gas').textContent=fRc(rec.reduce((a,r)=>a+r.gas,0));
+  document.getElementById('diario-count').textContent=diario.length+' registro'+(diario.length!==1?'s':'');
+  const cont=document.getElementById('diarioHistorico');
+  if(!diario.length){cont.innerHTML='<div class="empty-state"><div class="empty-icon">📅</div><p>Nenhum dia registrado ainda.<br>Comece registrando o dia de hoje!</p></div>';return;}
+  cont.innerHTML=diario.map(r=>{
+    const liq=r.ganho-r.gas;const pct=r.ganho>0?(liq/r.ganho*100).toFixed(0):0;
+    return '<div class="registro-dia"><div><div class="reg-data">'+fDataCurta(r.data)+'</div><div class="reg-km">🏍️ '+r.km.toFixed(1)+' km</div><div class="reg-ganho">💰 '+fR(r.ganho)+'</div>'+(r.gas>0?'<div class="reg-gas">⛽ '+fR(r.gas)+(r.litros>0?' - '+r.litros.toFixed(2)+'L':'')+'</div>':'')+'</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><div class="reg-total">'+fR(liq)+'</div><div class="reg-margem">liquido - '+pct+'%</div><button class="btn-danger-ghost" onclick="removerDia(''+r.id+'')">🗑️</button></div></div>';
+  }).join('');
+}
+const DEF_COMPS=[
+  {id:'oleo_motor',nome:'Oleo do Motor',icon:'🛢️',duracaoKm:3000,custo:80,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+  {id:'pastilha_d',nome:'Pastilha Freio Dianteiro',icon:'🔴',duracaoKm:15000,custo:60,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+  {id:'pastilha_t',nome:'Pastilha Freio Traseiro',icon:'🔵',duracaoKm:10000,custo:50,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+  {id:'pneu_d',nome:'Pneu Dianteiro',icon:'⚫',duracaoKm:20000,custo:200,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+  {id:'pneu_t',nome:'Pneu Traseiro',icon:'⬛',duracaoKm:15000,custo:250,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+  {id:'relacao',nome:'Relacao (Corrente/Kit)',icon:'⛓️',duracaoKm:25000,custo:150,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+  {id:'filtro_ar',nome:'Filtro de Ar',icon:'💨',duracaoKm:8000,custo:40,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+  {id:'filtro_oleo',nome:'Filtro de Oleo',icon:'🔧',duracaoKm:5000,custo:30,ultimoKm:0,ultimaData:null,hist:[],isDefault:true},
+];
+const EMOJIS_C=['🔧','🛢️','⚙️','🔩','💨','⛓️','🔴','🔵','⚫','⬛','🟡','⚡','🌡️','💧','🪝','🔌','🛞','🏍️','⛽','🔑','🪛','🔋','🛠️','🔨'];
+const EMOJIS_X=['💳','📋','🏦','📄','🛡️','🏛️','💰','🔖','📑','🧾','🏷️','💼','🪙','💵','📊','🔐','🚦','📝','🏠','⚡','🚗','🔒','📅','🎯'];
+let comps=[],custosExtras=[],kmAtual=0;
+function carregarManutencao(){
+  try{const sv=JSON.parse(localStorage.getItem(K.comps)||'null');if(sv){const mp=Object.fromEntries(sv.map(c=>[c.id,c]));comps=DEF_COMPS.map(d=>({...d,...(mp[d.id]||{}),isDefault:true}));sv.filter(c=>!c.isDefault).forEach(c=>comps.push(c));}else comps=DEF_COMPS.map(c=>({...c}));}catch{comps=DEF_COMPS.map(c=>({...c}));}
+  try{custosExtras=JSON.parse(localStorage.getItem(K.custos)||'[]');}catch{custosExtras=[];}
+  kmAtual=parseInt(localStorage.getItem(K.odo)||'0')||0;
+}
+function salvarManutencao(){localStorage.setItem(K.comps,JSON.stringify(comps));localStorage.setItem(K.custos,JSON.stringify(custosExtras));localStorage.setItem(K.odo,String(kmAtual));}
+function desgaste(c){const usado=Math.max(0,kmAtual-(c.ultimoKm||0));const pct=c.duracaoKm>0?Math.min(100,usado/c.duracaoKm*100):0;const rest=Math.max(0,c.duracaoKm-usado);return{usado,pct,rest};}
+function renderManutencao(){
+  document.getElementById('odo-display').innerHTML=kmAtual.toLocaleString('pt-BR')+' <small>km</small>';
+  let alertas=0;
+  const cont=document.getElementById('componentesContainer');
+  cont.innerHTML=comps.map(c=>{
+    const{usado,pct,rest}=desgaste(c);
+    const isWarn=pct>=75&&pct<90,isDanger=pct>=90;
+    if(isWarn||isDanger)alertas++;
+    const wc=isDanger?'danger':isWarn?'warn':'ok';
+    const cc=isDanger?'danger':isWarn?'warn':'';
+    const sc=isDanger?'danger':isWarn?'warn':'ok';
+    const st=isDanger?'⚠️ TROCAR JA! '+(rest>0?rest.toFixed(0)+' km restante':'Limite ultrapassado!'):isWarn?'⚠️ Trocar em breve - '+rest.toFixed(0)+' km rest.':c.ultimaData?'✅ '+usado.toFixed(0)+' km usados - '+rest.toFixed(0)+' km rest.':'Nunca registrado';
+    return '<div class="comp-card '+cc+'"><div class="comp-head"><div class="comp-icon-box">'+c.icon+'</div><div class="comp-name-grp"><div class="comp-name">'+c.nome+'</div><div class="comp-sub">Troca a cada '+c.duracaoKm.toLocaleString('pt-BR')+' km - '+fR(c.custo)+'</div></div><div class="comp-acts"><button class="btn-ghost" onclick="abrirModalComp(''+c.id+'')">✏️</button>'+(c.isDefault?'':'<button class="btn-danger-ghost" onclick="deletarComp(''+c.id+'')">🗑️</button>')+'</div></div><div class="wear-lbl"><span>'+pct.toFixed(0)+'% usado</span><span>'+(c.ultimaData?'Ultima: '+fData(c.ultimaData):'Nunca trocado')+'</span></div><div class="wear-track"><div class="wear-fill '+wc+'" style="width:'+pct.toFixed(1)+'%"></div></div><div class="comp-foot"><div class="comp-status '+sc+'">'+st+'</div><button class="btn-troca" onclick="abrirTroca(''+c.id+'')">🔧 Registrar Troca</button></div></div>';
+  }).join('');
+  const badge=document.getElementById('badge-manut');
+  if(alertas>0){badge.textContent=alertas;badge.classList.add('on');}else badge.classList.remove('on');
+  const alertEl=document.getElementById('alerta-count');
+  if(alertas>0){alertEl.textContent=alertas+' alerta'+(alertas>1?'s':'');alertEl.classList.add('alert');}else{alertEl.textContent='';alertEl.classList.remove('alert');}
+  renderCustos();
+}
+function renderCustos(){
+  const cont=document.getElementById('custosContainer');
+  if(!custosExtras.length){cont.innerHTML='<div style="font-size:.76em;color:#555;padding:8px 0 4px">Nenhum custo extra cadastrado ainda.</div>';return;}
+  const pl={mensal:'/mes',anual:'/ano',por_km:'/km'};
+  cont.innerHTML=custosExtras.map(c=>{
+    const detail={mensal:'Mensal',anual:'Anual ('+fR(c.valor/12)+'/mes)',por_km:'Por km rodado'}[c.periodo];
+    return '<div class="custo-extra-card"><div class="ce-icon">'+c.icon+'</div><div class="ce-info"><div class="ce-name">'+c.nome+'</div><div class="ce-detail">'+detail+'</div></div><div><div class="ce-val">'+fR(c.valor)+'</div><div class="ce-per">'+(pl[c.periodo]||'')+'</div></div><div class="ce-acts"><button class="btn-ghost" onclick="abrirModalCusto(''+c.id+'')">✏️</button><button class="btn-danger-ghost" onclick="deletarCusto(''+c.id+'')">🗑️</button></div></div>';
+  }).join('');
+}
+function abrirModalOdo(){document.getElementById('odo-input').value=kmAtual||'';abrirModal('odoModal');}
+function salvarOdo(){const v=parseInt(document.getElementById('odo-input').value);if(isNaN(v)||v<0){alert('Informe um valor valido!');return;}kmAtual=v;salvarManutencao();fecharModal('odoModal');renderManutencao();}
+function abrirTroca(id){
+  const c=comps.find(x=>x.id===id);if(!c)return;
+  document.getElementById('troca-comp-id').value=id;
+  document.getElementById('troca-title').textContent='🔧 '+c.nome;
+  document.getElementById('troca-km').value=kmAtual||'';
+  document.getElementById('troca-data').value=hoje();
+  document.getElementById('troca-custo').value=c.custo?String(c.custo).replace('.',','):'';
+  document.getElementById('troca-obs').value='';
+  const hist=c.hist||[];
+  const hs=document.getElementById('troca-hist-section'),hl=document.getElementById('troca-hist-list');
+  if(hist.length>0){hs.style.display='block';hl.innerHTML=hist.slice(-5).reverse().map(h=>'<div class="troca-hist-item"><span class="th-date">'+fData(h.data)+'</span><span class="th-km">'+((h.km||0).toLocaleString('pt-BR'))+' km</span><span class="th-custo">'+fR(h.custo||0)+'</span></div>').join('');}else hs.style.display='none';
+  abrirModal('trocaModal');
+}
+function salvarTroca(){
+  const id=document.getElementById('troca-comp-id').value,c=comps.find(x=>x.id===id);if(!c)return;
+  const km=parseInt(document.getElementById('troca-km').value),data=document.getElementById('troca-data').value,custo=pBR(document.getElementById('troca-custo').value),obs=document.getElementById('troca-obs').value.trim();
+  if(!data){alert('Informe a data!');return;}if(isNaN(km)||km<0){alert('Informe o km!');return;}
+  c.ultimoKm=km;c.ultimaData=data;c.custo=custo||c.custo;
+  if(!c.hist)c.hist=[];c.hist.push({data,km,custo,obs});
+  if(km>kmAtual)kmAtual=km;
+  salvarManutencao();fecharModal('trocaModal');renderManutencao();
+}
+function renderEmoji(gridId,hiddenId,emojis,sel){document.getElementById(gridId).innerHTML=emojis.map(e=>'<div class="emoji-opt'+(e===sel?' sel':'')+'" onclick="selEmoji(''+gridId+'',''+hiddenId+'',''+e+'',this)">'+e+'</div>').join('');}
+function selEmoji(gridId,hiddenId,emoji,el){document.getElementById(gridId).querySelectorAll('.emoji-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');document.getElementById(hiddenId).value=emoji;}
+function abrirModalComp(id){
+  const c=id?comps.find(x=>x.id===id):null;
+  document.getElementById('comp-edit-id').value=id||'';
+  document.getElementById('comp-modal-title').textContent=c?'✏️ Editar: '+c.nome:'⚙️ Novo Componente';
+  document.getElementById('comp-nome').value=c?c.nome:'';
+  document.getElementById('comp-icon').value=c?c.icon:'🔩';
+  document.getElementById('comp-duracao').value=c?c.duracaoKm:'';
+  document.getElementById('comp-custo').value=c?String(c.custo).replace('.',','):'';
+  renderEmoji('comp-emoji-grid','comp-icon',EMOJIS_C,c?c.icon:'🔩');
+  const footer=document.getElementById('comp-modal-footer');
+  if(c&&!c.isDefault)footer.innerHTML='<button class="btn-modal btn-delete" onclick="deletarComp(''+id+'');fecharModal('compModal')">Excluir</button><button class="btn-modal btn-save" onclick="salvarComp()">Salvar</button>';
+  else footer.innerHTML='<button class="btn-modal btn-cancel" onclick="fecharModal('compModal')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarComp()">Salvar</button>';
+  abrirModal('compModal');
+}
+function salvarComp(){
+  const id=document.getElementById('comp-edit-id').value,nome=document.getElementById('comp-nome').value.trim(),icon=document.getElementById('comp-icon').value||'🔩',dur=parseInt(document.getElementById('comp-duracao').value)||0,custo=pBR(document.getElementById('comp-custo').value);
+  if(!nome){alert('Informe o nome!');return;}if(dur<=0){alert('Informe a durabilidade!');return;}
+  if(id){const i=comps.findIndex(c=>c.id===id);if(i>=0)Object.assign(comps[i],{nome,icon,duracaoKm:dur,custo});}
+  else comps.push({id:uid(),nome,icon,duracaoKm:dur,custo,ultimoKm:0,ultimaData:null,hist:[],isDefault:false});
+  salvarManutencao();fecharModal('compModal');renderManutencao();
+}
+function deletarComp(id){if(!confirm('Excluir este componente?'))return;comps=comps.filter(c=>c.id!==id);salvarManutencao();fecharModal('compModal');renderManutencao();}
+function abrirModalCusto(id){
+  const c=id?custosExtras.find(x=>x.id===id):null;
+  document.getElementById('custo-edit-id').value=id||'';
+  document.getElementById('custo-modal-title').textContent=c?'✏️ Editar Custo':'💳 Novo Custo';
+  document.getElementById('custo-nome').value=c?c.nome:'';
+  document.getElementById('custo-icon').value=c?c.icon:'💳';
+  document.getElementById('custo-valor').value=c?String(c.valor).replace('.',','):'';
+  document.getElementById('custo-periodo').value=c?c.periodo:'mensal';
+  renderEmoji('custo-emoji-grid','custo-icon',EMOJIS_X,c?c.icon:'💳');
+  const footer=document.getElementById('custo-modal-footer');
+  if(c)footer.innerHTML='<button class="btn-modal btn-delete" onclick="deletarCusto(''+id+'');fecharModal('custoModal')">Excluir</button><button class="btn-modal btn-save" onclick="salvarCusto()">Salvar</button>';
+  else footer.innerHTML='<button class="btn-modal btn-cancel" onclick="fecharModal('custoModal')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarCusto()">Salvar</button>';
+  abrirModal('custoModal');
+}
+function salvarCusto(){
+  const id=document.getElementById('custo-edit-id').value,nome=document.getElementById('custo-nome').value.trim(),icon=document.getElementById('custo-icon').value||'💳',valor=pBR(document.getElementById('custo-valor').value),periodo=document.getElementById('custo-periodo').value;
+  if(!nome){alert('Informe o nome!');return;}if(valor<=0){alert('Informe o valor!');return;}
+  if(id){const i=custosExtras.findIndex(c=>c.id===id);if(i>=0)Object.assign(custosExtras[i],{nome,icon,valor,periodo});}
+  else custosExtras.push({id:uid(),nome,icon,valor,periodo});
+  salvarManutencao();fecharModal('custoModal');renderManutencao();
+}
+function deletarCusto(id){if(!confirm('Remover este custo?'))return;custosExtras=custosExtras.filter(c=>c.id!==id);salvarManutencao();renderManutencao();}
+let periodoDias=30;
+function setPeriodo(d){periodoDias=d;document.querySelectorAll('.periodo-btn').forEach(b=>b.classList.remove('active'));document.getElementById('p'+d).classList.add('active');renderAnalise();}
+function renderAnalise(){
+  const cont=document.getElementById('analise-content');
+  let recs=[...diario];
+  if(periodoDias>0){const lim=new Date();lim.setDate(lim.getDate()-periodoDias);recs=recs.filter(r=>new Date(r.data+'T12:00:00')>=lim);}
+  if(!recs.length){cont.innerHTML='<div class="analise-empty"><div class="ae-icon">📊</div><p>Sem dados para o periodo selecionado.<br>Registre dias na aba <strong>Diario</strong> para ver a analise.</p></div>';return;}
+  const totalKm=recs.reduce((a,r)=>a+r.km,0);
+  const totalRec=recs.reduce((a,r)=>a+r.ganho,0);
+  const totalGas=recs.reduce((a,r)=>a+r.gas,0);
+  const numDias=recs.length;
+  const diasP=periodoDias>0?periodoDias:Math.max(1,Math.ceil((new Date()-new Date(recs[recs.length-1].data+'T12:00:00'))/(864e5))+1);
+  const custoManutKm=comps.reduce((a,c)=>a+(c.duracaoKm>0?c.custo/c.duracaoKm:0),0);
+  let custoFixoTotal=0,detFixo=[];
+  custosExtras.forEach(c=>{let vp=0;if(c.periodo==='por_km')vp=c.valor*totalKm;else if(c.periodo==='mensal')vp=c.valor*(diasP/30);else if(c.periodo==='anual')vp=c.valor*(diasP/365);custoFixoTotal+=vp;detFixo.push({nome:c.nome,icon:c.icon,vp});});
+  const cGasKm=totalKm>0?totalGas/totalKm:0,cManutTotal=custoManutKm*totalKm,cFixoKm=totalKm>0?custoFixoTotal/totalKm:0,cTotKm=cGasKm+custoManutKm+cFixoKm,recKm=totalKm>0?totalRec/totalKm:0,margKm=recKm-cTotKm,margPct=recKm>0?margKm/recKm*100:0,cTotReal=totalGas+cManutTotal+custoFixoTotal;
+  cont.innerHTML=
+    '<div class="kpi-grid">'+
+    '<div class="kpi-card kpi-r"><div class="kpi-icon">💰</div><div class="kpi-val">'+fRc(totalRec)+'</div><div class="kpi-lbl">Receita Total</div></div>'+
+    '<div class="kpi-card kpi-k"><div class="kpi-icon">🏍️</div><div class="kpi-val">'+totalKm.toFixed(0)+' km</div><div class="kpi-lbl">KM Rodados</div></div>'+
+    '<div class="kpi-card kpi-g"><div class="kpi-icon">⛽</div><div class="kpi-val">'+fRc(totalGas)+'</div><div class="kpi-lbl">Gasto Gasolina</div></div>'+
+    '<div class="kpi-card kpi-d"><div class="kpi-icon">📅</div><div class="kpi-val">'+numDias+'d</div><div class="kpi-lbl">Dias Trabalhados</div></div>'+
+    '</div>'+
+    '<div class="analise-box">'+
+    '<div class="analise-box-title">📈 Produtividade</div>'+
+    '<div class="cr"><span class="cr-lbl">📏 Media km/dia</span><span class="cr-val" style="color:#6ab4d4">'+(numDias>0?(totalKm/numDias).toFixed(1):0)+' km</span></div>'+
+    '<div class="cr"><span class="cr-lbl">💰 Media ganhos/dia</span><span class="cr-val" style="color:#6dca8a">'+fR(numDias>0?totalRec/numDias:0)+'</span></div>'+
+    '<div class="cr"><span class="cr-lbl">📊 Receita por km</span><span class="cr-val" style="color:#6dca8a">'+fR(recKm)+'/km</span></div>'+
+    '</div>'+
+    '<div class="analise-box">'+
+    '<div class="analise-box-title">💸 Custo por KM</div>'+
+    '<div class="cr"><span class="cr-lbl">⛽ Gasolina</span><span class="cr-val">'+fR(cGasKm)+'/km</span></div>'+
+    '<div class="cr"><span class="cr-lbl">🔧 Manutencao (rateio)</span><span class="cr-val">'+fR(custoManutKm)+'/km</span></div>'+
+    detFixo.map(d=>'<div class="cr" style="padding-left:4px"><span class="cr-lbl" style="font-size:.92em">'+d.icon+' '+d.nome+'</span><span class="cr-val" style="font-size:.92em">'+fR(totalKm>0?d.vp/totalKm:0)+'/km</span></div>').join('')+
+    (custosExtras.length?'<div class="cr"><span class="cr-lbl">💳 Custos fixos</span><span class="cr-val">'+fR(cFixoKm)+'/km</span></div>':'')+
+    '<div class="cr subtotal"><span class="cr-lbl">💥 Custo Total</span><span class="cr-val">'+fR(cTotKm)+'/km</span></div>'+
+    '</div>'+
+    '<div class="analise-box">'+
+    '<div class="analise-box-title">📦 Totais no Periodo</div>'+
+    '<div class="cr"><span class="cr-lbl">⛽ Total gasolina</span><span class="cr-val">'+fR(totalGas)+'</span></div>'+
+    '<div class="cr"><span class="cr-lbl">🔧 Total manutencao (proj.)</span><span class="cr-val">'+fR(cManutTotal)+'</span></div>'+
+    (custosExtras.length?'<div class="cr"><span class="cr-lbl">💳 Total custos fixos</span><span class="cr-val">'+fR(custoFixoTotal)+'</span></div>':'')+
+    '<div class="cr subtotal"><span class="cr-lbl">💸 Total de Custos</span><span class="cr-val">'+fR(cTotReal)+'</span></div>'+
+    '</div>'+
+    '<div class="margem-box '+(margKm<0?'neg':'')+'">'+
+    '<div class="margem-lbl">'+(margKm>=0?'✅ Margem Liquida por KM':'❌ Resultado por KM')+'</div>'+
+    '<div class="margem-val">'+fR(margKm)+'/km</div>'+
+    '<div class="margem-pct">'+margPct.toFixed(1)+'% de margem'+(totalKm>0?' - Lucro total: '+fR(margKm*totalKm):'')+'</div>'+
+    '</div>'+
+    (totalGas===0&&custosExtras.length===0?'<div class="tip-box">💡 Registre gastos de gasolina no Diario e adicione custos fixos (IPVA, seguro) na aba Manutencao para uma analise mais precisa.</div>':'')+
+    '<div style="height:16px"></div>';
+}
+function updateBadge(){let n=comps.filter(c=>desgaste(c).pct>=75).length;const b=document.getElementById('badge-manut');if(n>0){b.textContent=n;b.classList.add('on');}else b.classList.remove('on');}
+window.addEventListener('DOMContentLoaded',()=>{carregarConfig();carregarDiario();carregarManutencao();document.getElementById('d-data').value=hoje();updateBadge();document.getElementById('analise-content').innerHTML='<div class="analise-empty"><div class="ae-icon">📊</div><p>Va para a aba <strong>Diario</strong> e registre seus dias de trabalho para ver a analise aqui.</p></div>';});
+</script>
 </body>
 </html>
