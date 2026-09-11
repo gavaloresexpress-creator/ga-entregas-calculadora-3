@@ -319,11 +319,11 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
         </div>
         <div class="section-header"><span class="section-title">&#9881;&#65039; Componentes da Moto</span><span class="section-count" id="alerta-count"></span></div>
         <div id="componentesContainer"></div>
-        <button class="btn-add" onclick="abrirModalComp(null)" style="margin-top:2px;margin-bottom:4px">+ Adicionar Componente para Rastrear</button>
+        <button class="btn-add" onclick="abrirModalComp('\''+c.id+'\')" style="margin-top:2px;margin-bottom:4px">+ Adicionar Componente para Rastrear</button>
         <div class="divider"></div>
         <div class="section-header"><span class="section-title">&#128179; Outros Custos</span></div>
         <div id="custosContainer"></div>
-        <button class="btn-add" onclick="abrirModalCusto(null)" style="margin-top:4px">+ Adicionar Custo (IPVA, Seguro, etc.)</button>
+        <button class="btn-add" onclick="abrirModalCusto('\''+c.id+'\')" style="margin-top:4px">+ Adicionar Custo (IPVA, Seguro, etc.)</button>
         <div style="height:16px"></div>
       </div>
       <!-- ANALISE -->
@@ -380,7 +380,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
 <!-- Modal Componente -->
 <div class="modal-overlay" id="compModal">
   <div class="modal-content">
-    <div class="modal-header"><h2 id="comp-modal-title">&#9881;&#65039; Novo Componente</h2><button class="close-modal" onclick="fecharModal('compModal')">&#10005;</button></div>
+    <div class="modal-header"><h2 id="comp-modal-title">&#9881;&#65039; Novo Componente</h2><button class="close-modal" onclick="fecharModal(\'compModal\')">&#10005;</button></div>
     <input type="hidden" id="comp-edit-id">
     <div class="form-group"><label class="field-label">Nome do Componente</label><input type="text" id="comp-nome" placeholder="Ex: Corrente, Relacao, Bateria..."></div>
     <div class="form-group"><label class="field-label">Icone</label><div class="emoji-grid" id="comp-emoji-grid"></div><input type="hidden" id="comp-icon" value="&#128297;"></div>
@@ -391,7 +391,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
 <!-- Modal Custo Extra -->
 <div class="modal-overlay" id="custoModal">
   <div class="modal-content">
-    <div class="modal-header"><h2 id="custo-modal-title">&#128179; Novo Custo</h2><button class="close-modal" onclick="fecharModal('custoModal')">&#10005;</button></div>
+    <div class="modal-header"><h2 id="custo-modal-title">&#128179; Novo Custo</h2><button class="close-modal" onclick="fecharModal(\'custoModal\')">&#10005;</button></div>
     <input type="hidden" id="custo-edit-id">
     <div class="form-group"><label class="field-label">Nome</label><input type="text" id="custo-nome" placeholder="Ex: IPVA, Seguro, Aluguel..."></div>
     <div class="form-group"><label class="field-label">Icone</label><div class="emoji-grid" id="custo-emoji-grid"></div><input type="hidden" id="custo-icon" value="&#128179;"></div>
@@ -553,7 +553,7 @@ function renderDiario(){
   if(!diario.length){cont.innerHTML='<div class="empty-state"><div class="empty-icon">📅</div><p>Nenhum dia registrado ainda.<br>Comece registrando o dia de hoje!</p></div>';return;}
   cont.innerHTML=diario.map(r=>{
     const liq=r.ganho-r.gas;const pct=r.ganho>0?(liq/r.ganho*100).toFixed(0):0;
-    return '<div class="registro-dia"><div><div class="reg-data">'+fDataCurta(r.data)+'</div><div class="reg-km">🏍️ '+r.km.toFixed(1)+' km</div><div class="reg-ganho">💰 '+fR(r.ganho)+'</div>'+(r.gas>0?'<div class="reg-gas">⛽ '+fR(r.gas)+(r.litros>0?' - '+r.litros.toFixed(2)+'L':'')+'</div>':'')+'</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><div class="reg-total">'+fR(liq)+'</div><div class="reg-margem">liquido - '+pct+'%</div><button class="btn-danger-ghost" onclick="removerDia(''+r.id+'')">🗑️</button></div></div>';
+    return '<div class="registro-dia"><div><div class="reg-data">'+fDataCurta(r.data)+'</div><div class="reg-km">🏍️ '+r.km.toFixed(1)+' km</div><div class="reg-ganho">💰 '+fR(r.ganho)+'</div>'+(r.gas>0?'<div class="reg-gas">⛽ '+fR(r.gas)+(r.litros>0?' - '+r.litros.toFixed(2)+'L':'')+'</div>':'')+'</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><div class="reg-total">'+fR(liq)+'</div><div class="reg-margem">liquido - '+pct+'%</div><button class="btn-danger-ghost" onclick="removerDia('\''+r.id+'\')">🗑️</button></div></div>';
   }).join('');
 }
 const DEF_COMPS=[
@@ -588,7 +588,7 @@ function renderManutencao(){
     const cc=isDanger?'danger':isWarn?'warn':'';
     const sc=isDanger?'danger':isWarn?'warn':'ok';
     const st=isDanger?'⚠️ TROCAR JA! '+(rest>0?rest.toFixed(0)+' km restante':'Limite ultrapassado!'):isWarn?'⚠️ Trocar em breve - '+rest.toFixed(0)+' km rest.':c.ultimaData?'✅ '+usado.toFixed(0)+' km usados - '+rest.toFixed(0)+' km rest.':'Nunca registrado';
-    return '<div class="comp-card '+cc+'"><div class="comp-head"><div class="comp-icon-box">'+c.icon+'</div><div class="comp-name-grp"><div class="comp-name">'+c.nome+'</div><div class="comp-sub">Troca a cada '+c.duracaoKm.toLocaleString('pt-BR')+' km - '+fR(c.custo)+'</div></div><div class="comp-acts"><button class="btn-ghost" onclick="abrirModalComp(''+c.id+'')">✏️</button>'+(c.isDefault?'':'<button class="btn-danger-ghost" onclick="deletarComp(''+c.id+'')">🗑️</button>')+'</div></div><div class="wear-lbl"><span>'+pct.toFixed(0)+'% usado</span><span>'+(c.ultimaData?'Ultima: '+fData(c.ultimaData):'Nunca trocado')+'</span></div><div class="wear-track"><div class="wear-fill '+wc+'" style="width:'+pct.toFixed(1)+'%"></div></div><div class="comp-foot"><div class="comp-status '+sc+'">'+st+'</div><button class="btn-troca" onclick="abrirTroca(''+c.id+'')">🔧 Registrar Troca</button></div></div>';
+    return '<div class="comp-card '+cc+'"><div class="comp-head"><div class="comp-icon-box">'+c.icon+'</div><div class="comp-name-grp"><div class="comp-name">'+c.nome+'</div><div class="comp-sub">Troca a cada '+c.duracaoKm.toLocaleString('pt-BR')+' km - '+fR(c.custo)+'</div></div><div class="comp-acts"><button class="btn-ghost" onclick="abrirModalComp('\''+c.id+'\')">✏️</button>'+(c.isDefault?'':'<button class="btn-danger-ghost" onclick="deletarComp('\''+c.id+'\')">🗑️</button>')+'</div></div><div class="wear-lbl"><span>'+pct.toFixed(0)+'% usado</span><span>'+(c.ultimaData?'Ultima: '+fData(c.ultimaData):'Nunca trocado')+'</span></div><div class="wear-track"><div class="wear-fill '+wc+'" style="width:'+pct.toFixed(1)+'%"></div></div><div class="comp-foot"><div class="comp-status '+sc+'">'+st+'</div><button class="btn-troca" onclick="abrirTroca('\''+c.id+'\')">🔧 Registrar Troca</button></div></div>';
   }).join('');
   const badge=document.getElementById('badge-manut');
   if(alertas>0){badge.textContent=alertas;badge.classList.add('on');}else badge.classList.remove('on');
@@ -602,7 +602,7 @@ function renderCustos(){
   const pl={mensal:'/mes',anual:'/ano',por_km:'/km'};
   cont.innerHTML=custosExtras.map(c=>{
     const detail={mensal:'Mensal',anual:'Anual ('+fR(c.valor/12)+'/mes)',por_km:'Por km rodado'}[c.periodo];
-    return '<div class="custo-extra-card"><div class="ce-icon">'+c.icon+'</div><div class="ce-info"><div class="ce-name">'+c.nome+'</div><div class="ce-detail">'+detail+'</div></div><div><div class="ce-val">'+fR(c.valor)+'</div><div class="ce-per">'+(pl[c.periodo]||'')+'</div></div><div class="ce-acts"><button class="btn-ghost" onclick="abrirModalCusto(''+c.id+'')">✏️</button><button class="btn-danger-ghost" onclick="deletarCusto(''+c.id+'')">🗑️</button></div></div>';
+    return '<div class="custo-extra-card"><div class="ce-icon">'+c.icon+'</div><div class="ce-info"><div class="ce-name">'+c.nome+'</div><div class="ce-detail">'+detail+'</div></div><div><div class="ce-val">'+fR(c.valor)+'</div><div class="ce-per">'+(pl[c.periodo]||'')+'</div></div><div class="ce-acts"><button class="btn-ghost" onclick="abrirModalCusto('\''+c.id+'\')">✏️</button><button class="btn-danger-ghost" onclick="deletarCusto('\''+c.id+'\')">🗑️</button></div></div>';
   }).join('');
 }
 function abrirModalOdo(){document.getElementById('odo-input').value=kmAtual||'';abrirModal('odoModal');}
@@ -629,7 +629,7 @@ function salvarTroca(){
   if(km>kmAtual)kmAtual=km;
   salvarManutencao();fecharModal('trocaModal');renderManutencao();
 }
-function renderEmoji(gridId,hiddenId,emojis,sel){document.getElementById(gridId).innerHTML=emojis.map(e=>'<div class="emoji-opt'+(e===sel?' sel':'')+'" onclick="selEmoji(''+gridId+'',''+hiddenId+'',''+e+'',this)">'+e+'</div>').join('');}
+function renderEmoji(gridId,hiddenId,emojis,sel){document.getElementById(gridId).innerHTML=emojis.map(e=>'<div class="emoji-opt'+(e===sel?' sel':'')+'" onclick="selEmoji('\''+gridId+'\','\''+hiddenId+'\','\''+e+'\',this)">'+e+'</div>').join('');}
 function selEmoji(gridId,hiddenId,emoji,el){document.getElementById(gridId).querySelectorAll('.emoji-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');document.getElementById(hiddenId).value=emoji;}
 function abrirModalComp(id){
   const c=id?comps.find(x=>x.id===id):null;
@@ -641,8 +641,8 @@ function abrirModalComp(id){
   document.getElementById('comp-custo').value=c?String(c.custo).replace('.',','):'';
   renderEmoji('comp-emoji-grid','comp-icon',EMOJIS_C,c?c.icon:'🔩');
   const footer=document.getElementById('comp-modal-footer');
-  if(c&&!c.isDefault)footer.innerHTML='<button class="btn-modal btn-delete" onclick="deletarComp(''+id+'');fecharModal('compModal')">Excluir</button><button class="btn-modal btn-save" onclick="salvarComp()">Salvar</button>';
-  else footer.innerHTML='<button class="btn-modal btn-cancel" onclick="fecharModal('compModal')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarComp()">Salvar</button>';
+  if(c&&!c.isDefault)footer.innerHTML='<button class="btn-modal btn-delete" onclick="deletarComp('\''+c.id+'\')">Excluir</button><button class="btn-modal btn-save" onclick="salvarComp()">Salvar</button>';
+  else footer.innerHTML='<button class="btn-modal btn-cancel" onclick="fecharModal(\'compModal\')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarComp()">Salvar</button>';
   abrirModal('compModal');
 }
 function salvarComp(){
@@ -650,9 +650,9 @@ function salvarComp(){
   if(!nome){alert('Informe o nome!');return;}if(dur<=0){alert('Informe a durabilidade!');return;}
   if(id){const i=comps.findIndex(c=>c.id===id);if(i>=0)Object.assign(comps[i],{nome,icon,duracaoKm:dur,custo});}
   else comps.push({id:uid(),nome,icon,duracaoKm:dur,custo,ultimoKm:0,ultimaData:null,hist:[],isDefault:false});
-  salvarManutencao();fecharModal('compModal');renderManutencao();
+  salvarManutencao();fecharModal(\'compModal\');renderManutencao();
 }
-function deletarComp(id){if(!confirm('Excluir este componente?'))return;comps=comps.filter(c=>c.id!==id);salvarManutencao();fecharModal('compModal');renderManutencao();}
+function deletarComp(id){if(!confirm('Excluir este componente?'))return;comps=comps.filter(c=>c.id!==id);salvarManutencao();fecharModal(\'compModal\');renderManutencao();}
 function abrirModalCusto(id){
   const c=id?custosExtras.find(x=>x.id===id):null;
   document.getElementById('custo-edit-id').value=id||'';
@@ -663,8 +663,8 @@ function abrirModalCusto(id){
   document.getElementById('custo-periodo').value=c?c.periodo:'mensal';
   renderEmoji('custo-emoji-grid','custo-icon',EMOJIS_X,c?c.icon:'💳');
   const footer=document.getElementById('custo-modal-footer');
-  if(c)footer.innerHTML='<button class="btn-modal btn-delete" onclick="deletarCusto(''+id+'');fecharModal('custoModal')">Excluir</button><button class="btn-modal btn-save" onclick="salvarCusto()">Salvar</button>';
-  else footer.innerHTML='<button class="btn-modal btn-cancel" onclick="fecharModal('custoModal')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarCusto()">Salvar</button>';
+  if(c)footer.innerHTML='<button class="btn-modal btn-delete" onclick="deletarCusto('\''+id+'\');fecharModal(\'custoModal\')">Excluir</button><button class="btn-modal btn-save" onclick="salvarCusto()">Salvar</button>';
+  else footer.innerHTML='<button class="btn-modal btn-cancel" onclick="fecharModal(\'custoModal\')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarCusto()">Salvar</button>';
   abrirModal('custoModal');
 }
 function salvarCusto(){
@@ -672,7 +672,7 @@ function salvarCusto(){
   if(!nome){alert('Informe o nome!');return;}if(valor<=0){alert('Informe o valor!');return;}
   if(id){const i=custosExtras.findIndex(c=>c.id===id);if(i>=0)Object.assign(custosExtras[i],{nome,icon,valor,periodo});}
   else custosExtras.push({id:uid(),nome,icon,valor,periodo});
-  salvarManutencao();fecharModal('custoModal');renderManutencao();
+  salvarManutencao();fecharModal(\'custoModal\');renderManutencao();
 }
 function deletarCusto(id){if(!confirm('Remover este custo?'))return;custosExtras=custosExtras.filter(c=>c.id!==id);salvarManutencao();renderManutencao();}
 let periodoDias=30;
