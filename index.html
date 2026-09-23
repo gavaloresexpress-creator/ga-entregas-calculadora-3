@@ -427,7 +427,7 @@ function fR(v){return'R$ '+Number(v).toFixed(2).replace('.',',');}
 function fRc(v){if(v>=1000)return'R$'+(v/1000).toFixed(1)+'k';return'R$'+Number(v).toFixed(0);}
 function fData(s){if(!s)return'';const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
 function fDataCurta(s){if(!s)return'';const dt=new Date(s+'T12:00:00');const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];return dias[dt.getDay()]+' '+s.slice(8,10)+'/'+s.slice(5,7);}
-function hoje(){return new Date().toISOString().slice(0,10);}
+function hoje(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function abrirModal(id){document.getElementById(id).classList.add('active');}
 function fecharModal(id){document.getElementById(id).classList.remove('active');}
 document.addEventListener('click',e=>{document.querySelectorAll('.modal-overlay.active').forEach(o=>{if(e.target===o)o.classList.remove('active');});});
