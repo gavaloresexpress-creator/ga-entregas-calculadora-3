@@ -331,6 +331,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
       <!-- ANALISE -->
       <div class="tab-panel" id="panel-analise">
         <div class="periodo-filter">
+          <button class="periodo-btn" id="p1" onclick="setPeriodo(1)">Hoje</button>
           <button class="periodo-btn" id="p7" onclick="setPeriodo(7)">7d</button>
           <button class="periodo-btn active" id="p30" onclick="setPeriodo(30)">30d</button>
           <button class="periodo-btn" id="p90" onclick="setPeriodo(90)">90d</button>
@@ -715,7 +716,8 @@ function setPeriodo(d){periodoDias=d;document.querySelectorAll('.periodo-btn').f
 function renderAnalise(){
   const cont=document.getElementById('analise-content');
   let recs=[...diario];
-  if(periodoDias>0){const lim=new Date();lim.setDate(lim.getDate()-periodoDias);recs=recs.filter(r=>new Date(r.data+'T12:00:00')>=lim);}
+  if(periodoDias===1){const h=hoje();recs=recs.filter(r=>r.data===h);}
+  else if(periodoDias>0){const lim=new Date();lim.setDate(lim.getDate()-periodoDias);recs=recs.filter(r=>new Date(r.data+'T12:00:00')>=lim);}
   if(!recs.length){cont.innerHTML='<div class="analise-empty"><div class="ae-icon">📊</div><p>Sem dados para o periodo selecionado.<br>Registre dias na aba <strong>Diario</strong> para ver a analise.</p></div>';return;}
   const totalKm=recs.reduce((a,r)=>a+r.km,0);
   const totalRec=recs.reduce((a,r)=>a+r.ganho,0);
