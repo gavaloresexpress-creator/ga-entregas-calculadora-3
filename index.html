@@ -301,11 +301,13 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
             <div class="form-group"><label class="field-label" for="d-km">KM Rodados</label><input type="number" id="d-km" min="0" step="0.1" placeholder="Ex: 85" inputmode="decimal"></div>
             <div class="form-group"><label class="field-label" for="d-ganho">Ganhos (R$)</label><input type="text" id="d-ganho" placeholder="Ex: 230,00" inputmode="decimal"></div>
           </div>
-          <div class="row-two">
-            <div class="form-group"><label class="field-label" for="d-litros">Litros Gasolina</label><input type="number" id="d-litros" min="0" step="0.01" placeholder="Ex: 3.5" inputmode="decimal"></div>
-            <div class="form-group"><label class="field-label" for="d-gas">Gasto Gasolina (R$)</label><input type="text" id="d-gas" placeholder="Ex: 22,00" inputmode="decimal"></div>
+          <div style="font-size:0.75em; color:#888; margin-bottom: 12px; background:rgba(212,175,55,.05); border:1px dashed rgba(212,175,55,.2); padding: 8px; border-radius: 8px;">
+            ℹ️ O gasto com gasolina será calculado automaticamente com base no KM rodado e na média da moto configurada.
           </div>
-          <button class="btn-primary" onclick="registrarDia()">&#128190; SALVAR DIA</button>
+          <div class="row-two">
+             <button class="btn-primary" onclick="registrarDia()">&#128190; SALVAR DIA</button>
+             <button class="btn-add" onclick="abrirModalAbastecimento()" style="height: 100%; display: flex; align-items: center; justify-content: center; margin: 0; background: rgba(109,202,138,.1); border-color: rgba(109,202,138,.3); color: #6dca8a; font-size: 0.72em; padding: 12px;">&#9981;&#65039; ABASTECIMENTO</button>
+          </div>
         </div>
         <div class="section-header"><span class="section-title">&#128203; Historico</span><span class="section-count" id="diario-count">0 registros</span></div>
         <div id="diarioHistorico"><div class="empty-state"><div class="empty-icon">&#128197;</div><p>Nenhum dia registrado ainda.<br>Comece registrando o dia de hoje!</p></div></div>
@@ -352,7 +354,8 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
     <div class="config-section"><div class="config-section-title">Servico Agendado (R$)</div><div class="row-two"><div class="form-group"><label class="field-label">Ate 5 km</label><input type="number" id="cfg_agendada_5" step="0.5"></div><div class="form-group"><label class="field-label">Ate 10 km</label><input type="number" id="cfg_agendada_10" step="0.5"></div><div class="form-group"><label class="field-label">Ate 15 km</label><input type="number" id="cfg_agendada_15" step="0.5"></div><div class="form-group"><label class="field-label">Ate 20 km</label><input type="number" id="cfg_agendada_20" step="0.5"></div></div><div class="row-two"><div class="form-group"><label class="field-label">Acima 20 km (por km)</label><input type="number" id="cfg_agendada_km" step="0.1"></div><div class="form-group"><label class="field-label">Acima 40 km (por km)</label><input type="number" id="cfg_agendada_40_km" step="0.1"></div></div></div>
     <div class="config-section"><div class="config-section-title">Servico Avulso</div><div class="row-two"><div class="form-group"><label class="field-label">Taxa Fixa (R$)</label><input type="number" id="cfg_avulsa_fixa" step="0.5"></div><div class="form-group"><label class="field-label">Por km (R$)</label><input type="number" id="cfg_avulsa_km" step="0.1"></div></div></div>
     <div class="config-section"><div class="config-section-title">Intermunicipal</div><div class="form-group"><label class="field-label">Por km (R$)</label><input type="number" id="cfg_inter_km" step="0.1"></div></div>
-    <div class="config-section" style="border:none;margin-bottom:0;padding-bottom:0"><div class="config-section-title">Adicionais</div><div class="row-two"><div class="form-group"><label class="field-label">Retorno (%)</label><input type="number" id="cfg_retorno_pct" step="1"></div><div class="form-group"><label class="field-label">Condominio (R$)</label><input type="number" id="cfg_condominio" step="0.5"></div><div class="form-group"><label class="field-label">Risco NF &gt; 500 (%)</label><input type="number" id="cfg_risco_pct" step="0.1"></div><div class="form-group"><label class="field-label">Espera (R$/min)</label><input type="number" id="cfg_espera_min" step="0.1"></div></div></div>
+    <div class="config-section"><div class="config-section-title">Adicionais</div><div class="row-two"><div class="form-group"><label class="field-label">Retorno (%)</label><input type="number" id="cfg_retorno_pct" step="1"></div><div class="form-group"><label class="field-label">Condominio (R$)</label><input type="number" id="cfg_condominio" step="0.5"></div><div class="form-group"><label class="field-label">Risco NF &gt; 500 (%)</label><input type="number" id="cfg_risco_pct" step="0.1"></div><div class="form-group"><label class="field-label">Espera (R$/min)</label><input type="number" id="cfg_espera_min" step="0.1"></div></div></div>
+    <div class="config-section" style="border:none;margin-bottom:0;padding-bottom:0"><div class="config-section-title">Consumo da Moto</div><div class="row-two"><div class="form-group"><label class="field-label">Média (km/L)</label><input type="number" id="cfg_media_km_l" step="0.1"></div></div></div>
     <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="restaurarPadroes()">Padroes</button><button class="btn-modal btn-save" onclick="salvarConfiguracoes()">Salvar</button></div>
   </div>
 </div>
@@ -384,7 +387,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
     <input type="hidden" id="comp-edit-id">
     <div class="form-group"><label class="field-label">Nome do Componente</label><input type="text" id="comp-nome" placeholder="Ex: Corrente, Relacao, Bateria..."></div>
     <div class="form-group"><label class="field-label">Icone</label><div class="emoji-grid" id="comp-emoji-grid"></div><input type="hidden" id="comp-icon" value="&#128297;"></div>
-    <div class="row-two"><div class="form-group"><label class="field-label">Durabilidade (km)</label><input type="number" id="comp-duracao" min="0" step="100" placeholder="Ex: 5000" inputmode="numeric"></div><div class="form-group"><label class="field-label">Custo da Troca (R$)</label><input type="text" id="comp-custo" placeholder="Ex: 80,00" inputmode="decimal"></div></div>
+    <div class="row-two"><div class="form-group"><label class="field-label">Durabilidade (Opcional)</label><input type="number" id="comp-duracao" min="0" step="100" placeholder="Sem limite" inputmode="numeric"></div><div class="form-group"><label class="field-label">Custo da Troca (R$)</label><input type="text" id="comp-custo" placeholder="Ex: 80,00" inputmode="decimal"></div></div>
     <div id="comp-modal-footer" class="modal-footer"></div>
   </div>
 </div>
@@ -397,6 +400,16 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) s
     <div class="form-group"><label class="field-label">Icone</label><div class="emoji-grid" id="custo-emoji-grid"></div><input type="hidden" id="custo-icon" value="&#128179;"></div>
     <div class="row-two"><div class="form-group"><label class="field-label">Valor (R$)</label><input type="text" id="custo-valor" placeholder="Ex: 500,00" inputmode="decimal"></div><div class="form-group"><label class="field-label">Frequencia</label><select id="custo-periodo"><option value="mensal">Mensal</option><option value="anual">Anual</option><option value="por_km">Por km rodado</option></select></div></div>
     <div id="custo-modal-footer" class="modal-footer"></div>
+  </div>
+</div>
+<!-- Modal Abastecimento -->
+<div class="modal-overlay" id="abastecimentoModal">
+  <div class="modal-content">
+    <div class="modal-header"><h2>&#9981;&#65039; Registrar Abastecimento</h2><button class="close-modal" onclick="fecharModal('abastecimentoModal')">&#10005;</button></div>
+    <div class="form-group"><label class="field-label">Preço do Litro do Combustível (R$)</label><input type="text" id="abast-preco" placeholder="Ex: 5,50" inputmode="decimal"></div>
+    <div class="form-group"><label class="field-label">Valor Gasto (R$) - Opcional</label><input type="text" id="abast-valor" placeholder="Ex: 50,00" inputmode="decimal"></div>
+    <p style="font-size:.73em;color:#666;margin-bottom:14px;line-height:1.55">O preço atualizado do combustível será usado para calcular os gastos dos próximos dias registrados automaticamente.</p>
+    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="fecharModal('abastecimentoModal')">Cancelar</button><button class="btn-modal btn-save" onclick="salvarAbastecimento()">Salvar</button></div>
   </div>
 </div>
 <script>
@@ -428,10 +441,10 @@ function switchTab(tab){
   if(tab==='manutencao')renderManutencao();
   if(tab==='analise')renderAnalise();
 }
-const defaultConfig={agendada:{km5:20,km10:25,km15:35,km20:50,kmMais20:3,kmMais40:4},avulsa:{fixa:7,porKm:3.5},intermunicipal:{porKm:4},adicionais:{retornoPct:60,condominio:5,riscoPct:5,esperaMin:0.7}};
+const defaultConfig={agendada:{km5:20,km10:25,km15:35,km20:50,kmMais20:3,kmMais40:4},avulsa:{fixa:7,porKm:3.5},intermunicipal:{porKm:4},adicionais:{retornoPct:60,condominio:5,riscoPct:5,esperaMin:0.7},consumo:{kmPorLitro:45,precoCombustivel:5.50}};
 let appConfig=JSON.parse(JSON.stringify(defaultConfig));
 function carregarConfig(){
-  try{const s=localStorage.getItem(K.cfg);if(s){const p=JSON.parse(s);appConfig={agendada:{...defaultConfig.agendada,...p.agendada},avulsa:{...defaultConfig.avulsa,...p.avulsa},intermunicipal:{...defaultConfig.intermunicipal,...p.intermunicipal},adicionais:{...defaultConfig.adicionais,...p.adicionais}};}}catch(e){appConfig=JSON.parse(JSON.stringify(defaultConfig));}
+  try{const s=localStorage.getItem(K.cfg);if(s){const p=JSON.parse(s);appConfig={agendada:{...defaultConfig.agendada,...p.agendada},avulsa:{...defaultConfig.avulsa,...p.avulsa},intermunicipal:{...defaultConfig.intermunicipal,...p.intermunicipal},adicionais:{...defaultConfig.adicionais,...p.adicionais},consumo:{...defaultConfig.consumo,...p.consumo}};}}catch(e){appConfig=JSON.parse(JSON.stringify(defaultConfig));}
   atualizarLabels();
 }
 function atualizarInputsConfig(){
@@ -448,6 +461,7 @@ function atualizarInputsConfig(){
   document.getElementById('cfg_condominio').value=appConfig.adicionais.condominio;
   document.getElementById('cfg_risco_pct').value=appConfig.adicionais.riscoPct;
   document.getElementById('cfg_espera_min').value=appConfig.adicionais.esperaMin;
+  document.getElementById('cfg_media_km_l').value=appConfig.consumo.kmPorLitro;
 }
 function atualizarLabels(){
   document.querySelector('#cardRetorno .option-desc').textContent='Bate e volta +'+appConfig.adicionais.retornoPct+'%';
@@ -467,6 +481,7 @@ function salvarConfiguracoes(){
   appConfig.adicionais.condominio=parseFloat(document.getElementById('cfg_condominio').value)||0;
   appConfig.adicionais.riscoPct=parseFloat(document.getElementById('cfg_risco_pct').value)||0;
   appConfig.adicionais.esperaMin=parseFloat(document.getElementById('cfg_espera_min').value)||0;
+  appConfig.consumo.kmPorLitro=parseFloat(document.getElementById('cfg_media_km_l').value)||45;
   localStorage.setItem(K.cfg,JSON.stringify(appConfig));
   atualizarLabels();fecharModal('configModal');
   if(document.getElementById('painelResultado').style.display==='block')calcularCorrida();
@@ -527,8 +542,10 @@ function registrarDia(){
   const data=document.getElementById('d-data').value;
   const km=parseFloat(document.getElementById('d-km').value);
   const ganho=pBR(document.getElementById('d-ganho').value);
-  const litros=parseFloat(document.getElementById('d-litros').value)||0;
-  const gas=pBR(document.getElementById('d-gas').value);
+  const media=appConfig.consumo.kmPorLitro||45;
+  const precoComb=appConfig.consumo.precoCombustivel||5.50;
+  const litros=km/media;
+  const gas=litros*precoComb;
   if(!data){alert('Selecione a data!');return;}
   if(isNaN(km)||km<=0){alert('Informe os km rodados!');return;}
   if(ganho<=0){alert('Informe os ganhos do dia!');return;}
@@ -536,10 +553,24 @@ function registrarDia(){
   const reg={id:uid(),data,km,ganho,litros,gas};
   if(existe>=0){if(confirm('Ja existe registro para '+fData(data)+'. Substituir?')){diario[existe]={...reg,id:diario[existe].id};}else return;}
   else diario.unshift(reg);
-  salvarDiario();renderDiario();
+  kmAtual += km;
+  salvarDiario();salvarManutencao();renderDiario();
+  if(activeTab==='manutencao') renderManutencao();
   document.getElementById('d-km').value='';document.getElementById('d-ganho').value='';
-  document.getElementById('d-litros').value='';document.getElementById('d-gas').value='';
   document.getElementById('d-data').value=hoje();
+}
+function abrirModalAbastecimento(){
+  document.getElementById('abast-preco').value=String(appConfig.consumo.precoCombustivel||'').replace('.',',');
+  document.getElementById('abast-valor').value='';
+  abrirModal('abastecimentoModal');
+}
+function salvarAbastecimento(){
+  const preco=pBR(document.getElementById('abast-preco').value);
+  if(!preco||preco<=0){alert('Informe um preço válido para o litro!');return;}
+  appConfig.consumo.precoCombustivel=preco;
+  localStorage.setItem(K.cfg,JSON.stringify(appConfig));
+  fecharModal('abastecimentoModal');
+  alert('Preço do combustível atualizado para ' + fR(preco));
 }
 function removerDia(id){if(!confirm('Remover este registro?'))return;diario=diario.filter(r=>r.id!==id);salvarDiario();renderDiario();}
 function renderDiario(){
@@ -575,20 +606,24 @@ function carregarManutencao(){
   kmAtual=parseInt(localStorage.getItem(K.odo)||'0')||0;
 }
 function salvarManutencao(){localStorage.setItem(K.comps,JSON.stringify(comps));localStorage.setItem(K.custos,JSON.stringify(custosExtras));localStorage.setItem(K.odo,String(kmAtual));}
-function desgaste(c){const usado=Math.max(0,kmAtual-(c.ultimoKm||0));const pct=c.duracaoKm>0?Math.min(100,usado/c.duracaoKm*100):0;const rest=Math.max(0,c.duracaoKm-usado);return{usado,pct,rest};}
+function desgaste(c){const usado=Math.max(0,kmAtual-(c.ultimoKm||0));const pct=c.duracaoKm>0?Math.min(100,usado/c.duracaoKm*100):0;const rest=c.duracaoKm>0?Math.max(0,c.duracaoKm-usado):0;return{usado,pct,rest};}
 function renderManutencao(){
   document.getElementById('odo-display').innerHTML=kmAtual.toLocaleString('pt-BR')+' <small>km</small>';
   let alertas=0;
   const cont=document.getElementById('componentesContainer');
   cont.innerHTML=comps.map(c=>{
     const{usado,pct,rest}=desgaste(c);
-    const isWarn=pct>=75&&pct<90,isDanger=pct>=90;
+    const temLimite=c.duracaoKm>0;
+    const isWarn=temLimite&&pct>=75&&pct<90,isDanger=temLimite&&pct>=90;
     if(isWarn||isDanger)alertas++;
     const wc=isDanger?'danger':isWarn?'warn':'ok';
     const cc=isDanger?'danger':isWarn?'warn':'';
-    const sc=isDanger?'danger':isWarn?'warn':'ok';
-    const st=isDanger?'⚠️ TROCAR JA! '+(rest>0?rest.toFixed(0)+' km restante':'Limite ultrapassado!'):isWarn?'⚠️ Trocar em breve - '+rest.toFixed(0)+' km rest.':c.ultimaData?'✅ '+usado.toFixed(0)+' km usados - '+rest.toFixed(0)+' km rest.':'Nunca registrado';
-    return '<div class="comp-card '+cc+'"><div class="comp-head"><div class="comp-icon-box">'+c.icon+'</div><div class="comp-name-grp"><div class="comp-name">'+c.nome+'</div><div class="comp-sub">Troca a cada '+c.duracaoKm.toLocaleString('pt-BR')+' km - '+fR(c.custo)+'</div></div><div class="comp-acts"><button class="btn-ghost" onclick="abrirModalComp(\''+c.id+'\')">✏️</button>'+(c.isDefault?'':'<button class="btn-danger-ghost" onclick="deletarComp(\''+c.id+'\')">🗑️</button>')+'</div></div><div class="wear-lbl"><span>'+pct.toFixed(0)+'% usado</span><span>'+(c.ultimaData?'Ultima: '+fData(c.ultimaData):'Nunca trocado')+'</span></div><div class="wear-track"><div class="wear-fill '+wc+'" style="width:'+pct.toFixed(1)+'%"></div></div><div class="comp-foot"><div class="comp-status '+sc+'">'+st+'</div><button class="btn-troca" onclick="abrirTroca(\''+c.id+'\')">🔧 Registrar Troca</button></div></div>';
+    const sc=temLimite?(isDanger?'danger':isWarn?'warn':'ok'):'ok';
+    const st=temLimite?(isDanger?'⚠️ TROCAR JA! '+(rest>0?rest.toFixed(0)+' km restante':'Limite ultrapassado!'):isWarn?'⚠️ Trocar em breve - '+rest.toFixed(0)+' km rest.':c.ultimaData?'✅ '+usado.toFixed(0)+' km usados - '+rest.toFixed(0)+' km rest.':'Nunca registrado'):(c.ultimaData?'ℹ️ '+usado.toFixed(0)+' km usados':'Aviso sem limite configurado');
+    const compSubStr=temLimite?'Troca a cada '+c.duracaoKm.toLocaleString('pt-BR')+' km - '+fR(c.custo):'Monitoramento sem limite - '+fR(c.custo);
+    const wearLblStr=temLimite?'<span>'+pct.toFixed(0)+'% usado</span>':'<span>Apenas tracking</span>';
+    const wearTrackStr=temLimite?'<div class="wear-track"><div class="wear-fill '+wc+'" style="width:'+pct.toFixed(1)+'%"></div></div>':'';
+    return '<div class="comp-card '+cc+'"><div class="comp-head"><div class="comp-icon-box">'+c.icon+'</div><div class="comp-name-grp"><div class="comp-name">'+c.nome+'</div><div class="comp-sub">'+compSubStr+'</div></div><div class="comp-acts"><button class="btn-ghost" onclick="abrirModalComp(\''+c.id+'\')">✏️</button>'+(c.isDefault?'':'<button class="btn-danger-ghost" onclick="deletarComp(\''+c.id+'\')">🗑️</button>')+'</div></div><div class="wear-lbl">'+wearLblStr+'<span>'+(c.ultimaData?'Ultima: '+fData(c.ultimaData):'Nunca trocado')+'</span></div>'+wearTrackStr+'<div class="comp-foot"><div class="comp-status '+sc+'">'+st+'</div><button class="btn-troca" onclick="abrirTroca(\''+c.id+'\')">🔧 Registrar Troca</button></div></div>';
   }).join('');
   const badge=document.getElementById('badge-manut');
   if(alertas>0){badge.textContent=alertas;badge.classList.add('on');}else badge.classList.remove('on');
@@ -647,7 +682,7 @@ function abrirModalComp(id){
 }
 function salvarComp(){
   const id=document.getElementById('comp-edit-id').value,nome=document.getElementById('comp-nome').value.trim(),icon=document.getElementById('comp-icon').value||'🔩',dur=parseInt(document.getElementById('comp-duracao').value)||0,custo=pBR(document.getElementById('comp-custo').value);
-  if(!nome){alert('Informe o nome!');return;}if(dur<=0){alert('Informe a durabilidade!');return;}
+  if(!nome){alert('Informe o nome!');return;}
   if(id){const i=comps.findIndex(c=>c.id===id);if(i>=0)Object.assign(comps[i],{nome,icon,duracaoKm:dur,custo});}
   else comps.push({id:uid(),nome,icon,duracaoKm:dur,custo,ultimoKm:0,ultimaData:null,hist:[],isDefault:false});
   salvarManutencao();fecharModal('compModal');renderManutencao();
